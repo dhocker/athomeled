@@ -1,0 +1,12 @@
+*.pyc
+*.log
+at_home_led.conf
+at_home_led.log*
+Thumbs.db
+*.odt
+*.odg
+*.odt#
+*.odg#
+.idea/
+.DS_Store
+.vscode/

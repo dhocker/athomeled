@@ -1,0 +1,375 @@
+# AtHomeLED - LED Light Strip Server
+Copyright © 2016 by Dave Hocker
+
+## Overview
+The AtHomeLED server is designed to run simple LED strip light shows on
+a Raspberry Pi. 
+The original motive for the AtHomeLED server was for
+something to run a holiday lighting program on a strip of C9 LED lights.
+
+The server can be controlled locally or remotely via a TCP based communication interface
+([the remote control interface](#remote-control)).
+The interface is suited to command-line control via telnet or a front-end client application
+that uses the interface as an API.
+
+A show is constructed as a script using a relatively simple
+scripting language ([Script Engine](#script-engine)). Scripts are stored in script
+files in the [ScriptFileDirectory](#configuration) on the AtHomeLED host.
+
+Using the remote control interface you can:
+
+* view a list of available script files
+* start a script file
+* stop the currently running script file
+* view the status of the AtHomeLED server
+
+There are several different kinds of LED strips depending on which 
+controller string is used. AtHomeLED supports the following.
+
+* WS2811 based LED strings
+* APA102 (SPI protocol) based LED strips (e.g. Adafruit DotStars)
+
+How to wire these to a Raspberry Pi is out of the scope of this
+document, but examples of how to wire these strings can be found in
+the references.
+
+AtHomeLED comes with a driver for the both of these LED strings.
+If you want to
+use another LED string type you will need to write your own driver. 
+The AtHomeLED/driver/dummy_driver.py
+file provides a template for implementing a driver. The DUMMY driver can 
+be used as a mock device. This is a good solution for testing.
+
+## License
+
+The AtHomeLED server is licensed under the GNU General Public License v3 as published 
+by the Free Software Foundation, Inc..
+See the LICENSE file for the full text of the license.
+
+## Source Code
+
+The full source is maintained on [GitHub](https://www.github.com/dhocker/AtHomeLED).
+
+AtHomeLED was developed using PyCharm CE. PyCharm CE is highly recommended. However, if you
+want to make changes, a good text editor of your choice is all that is really required.
+
+## Execution Environment
+
+AtHomeLED is written in Python 2.7. A suitable execution environment would use 
+virtualenv and virtualenvwrapper to create a working virtual environment. 
+The requirements.txt file can be used with pip to create the required virtual environment with all dependencies.
+AtHomeLED requires the [athomesocketserver](https://www.github.com/dhocker/athomesocketserver) package.
+
+AtHomeLED has been tested on Raspbian Jessie.
+
+## Configuration <a id="configuration"></a>
+
+AtHomeLED is setup using the JSON formatted **at_home_led.conf** file. The easiest way to create a configuration
+file is to copy at_home_led.example.conf to at_home_led.conf and edit as required.
+
+|Key           | Use         |
+|------------- |-------------|
+| Driver | WS2811 or APA102 or DotStar. Case insensitive. |
+| NumberPixels | Number of LEDs in the string or strip. |
+| ColorOrder | The order of colors as sent to the LED strip. Only applies to APA102/DotStars. Default and recommended value is rgb. |
+| Invert | Inverts data signal. For WS2811 only. Use when no level shifter is employed. |
+| ScriptFileDirectory | Full path to location where script files are stored. Script files should be named with a .led extension. |
+| LogFile | Full path and name of log file. |
+| LogConsole | True or False. If True logging output will be routed to the log file and the console. |
+| LogLevel | Debug, Info, Warn, or Error. Case insensitive. |
+| Port | The TCP port to be used for remote control. The default is 5000. |
+
+## Script Engine <a id="script-engine"></a>
+The script engine executes the contents of a script file. It is a two phase interpreter. The first phase is a
+compile phase where statements are validated and value definitions are captured. The second phase is an 
+execution phase. Because of the two phase design, definitional statements (channel, value, define) are
+compiled so that the last definition wins. That is, if a name is defined multiple times, the last
+definition wins.
+
+## Script File
+A script file contains any number of statements. 
+
+* Each line is a statement.
+* Leading and trailing blanks are ignored.
+* Blank lines are ignored.
+* Lines that begin with a # are ignored.
+* Everything is case insensitive.
+
+## Statements
+
+### Syntax
+A statement consists of a number of white space delimited tokens. Except for the # character, there
+are no special rules for characters. The single quote, double quote and all other special characters are treated
+just like alpha-numeric characters.
+
+The first token of a statement is the statement identifier (a.k.a. an opcode or command).
+
+    statement [argument [argument...argument]]
+
+### Names
+Several statements involve the definition of a name (a constant). The only rule for a name is that it
+cannot contain blanks. A name can contain any alpha-numeric or special character.
+Single or double quotes have no special significance. 
+
+### Comment
+Any line whose first non-blank character is a # is a comment. Comments are ignored.
+
+    # This is a comment
+
+Comments are not recognized as such when placed at the end of an otherwise valid statement.
+
+### Define
+A define statement defines a general use numeric value. 
+A valid define value is an integer or floating point number. For example, 10.0 or 10.
+
+    define name value
+
+### Color
+Use the color statement to define an RGB color.
+
+    color name red green blue
+    
+### Import
+The import statement includes another file into the script file. This works like a C/C++ include or a Python import
+statement. The content of the imported file is inserted into the script in line. There is no duplicate import
+checking. If you import the same file multiple times, its contents will be inserted multiple times.
+
+    import filename
+
+### Do-At
+The Do-At statement is designed for running a lighting program on a daily basis. This is the kind of thing that
+you would do for a holiday lighting program. The Do-At statement allows you to specify a time of day when the
+program is to run. The lighting program is the script block between the Do-At statement
+and its corresponding Do-At-End statement. There can only be one Do-At statement in a script.
+This is a simple limitation to avoid overly complicating the script language.
+
+    do-at hh:mm:ss
+        # script block statements
+    do-at-end
+    
+The argument is the time of day (24 hour clock) when the program is to run. When the Do-At statement executes, 
+it puts the script into a wait state where it waits for the time of day to arrive.
+
+Example
+
+    do-at 18:00:00
+        # script block statements
+    do-at-end
+
+This example waits until 18:00:00 (6:00pm) at which time it runs the script block.
+
+Note: If you need to break a waiting Do-At statement, use the stop command on the remote control interface.
+
+### Do-At-End
+The Do-At-End statement serves as the foot of the Do-At loop or the end of the Do-At block.
+When script execution reaches the Do-At-End statement, all LED channels are reset and 
+execution returns to the corresponding Do-At statement.
+
+    do-at-end
+
+### Do-For
+The Do-For statement executes a script block for a given period of time. The script block is the
+set of statements between the Do-For statement and its corresponding Do-For-End statement.
+    
+    do-for hh:mm:ss
+        # script block statements
+    do-for-end
+    
+The argument is a duration in hours, minutes and seconds.
+
+Currently, Do-For statements cannot be nested.
+
+### Do-For-End
+The Do-For-End statement is the foot of the Do-For loop. When execution reaches the Do-For-End statement,
+the elapsed time since the entry into the Do-For loop is evaluated. If the elapsed time is less than
+the Do-For duration, execution returns to the next statement after the Do-For. If the elapsed time
+is greater than or equal to the Do-For duration, execution continues with the statement after
+the Do-For-End. Note that with this behavior, the time spent in the loop may actually be longer than
+the Do-For duration. This is completely dependent on how long it takes to execute the script block.
+
+    do-for-end
+
+### Do-forever
+The do-forever statement is the script equivalent of the C/C++ "while true" statement. The block of script
+following the do-forever statement is executed until script engine execution is terminated.
+There can only be one Do-Forever statement in a script.
+
+    do-forever
+        # Block of statements
+    do-forever-end
+
+Note: Script engine execution can be terminiated in two ways:
+* the remote control interface stop command
+* killing the AtHomeLED server process (e.g. ctrl-C or kill command or service stop command)
+
+### Do-forever-end
+The do-forever-end statement is the foot of the do-forever loop. When the statement executes, it sets the next
+statement to the statement following the corresponding do-forever statement.
+
+    do-forever-end
+
+### Pause
+Pause suspends the execution of the script for the specified amount of time.
+
+    pause hh:mm:ss
+    
+### Reset
+Reset sets all pixels to off (black).
+
+    reset
+
+### Add LED algorithm/command repetoire here
+* colorwipe
+* theaterchase
+* rainbow
+* rainbowcycle
+* theaterchaserainbow
+* scrollpixels
+* randompixels
+* brightness
+
+### Script File EOF
+When end-of-file is reached, the script terminates. As part of script termination, all LED channels
+are reset.
+
+### Script Example
+The following script runs one hour every day at 6:30pm local time.
+
+    #
+    # LED test script
+    #
+
+    # Colors
+    color orange 255 83 14
+    color red 255 0 0
+    
+    # Time definitions
+    define default-fade-time 3.0
+    define default-step-time 5.0
+    define periodtime 0.2
+    
+    # Set the global step time
+    step-period periodtime
+    
+    do-at 18:30:00   
+        # This one hour loop contains three steps with a step-time of 5.0 seconds.
+        # That means one pass through the main loop will take 3 * 5.0 = 15.0 seconds.
+        # Note that indention is not required, but it does improve readability.
+        do-for 01:00:00
+            # Run LED algorithms
+        do-for-end
+    do-at-end
+
+## Remote Control Interface <a id="remote-control"></a>
+The remote control interface uses a simple TCP socket connection to implement a client-server
+arrangement. The client sends simple commands and the server responds with JSON formatted responses.
+A basic telnet app can be used as the client or a UI application can be written.
+
+A connection to the AtHomeLED server can usually be opened like this.
+
+    telnet hostname 5000
+
+## Control Commands
+Each command produces a JSON formatted response. There are several response
+properties that are common to most command responses.
+
+|Property      | Description |
+|------------- |-------------|
+| command | The command that produced this response. |
+| result | OK or ERROR. |
+| messages | If the result == ERROR this property (a list) will describe the error. |
+
+Commands that produce an error will include an error message list in the response.
+
+
+### LED Engine Status
+The status command returns the current status of the LED Engine.
+
+**Command:** status
+
+**Response:** {"command": "status", "result": "OK", "state": "STOPPED"}
+
+**Response:** {"command": "status", "result": "OK", "state": "RUNNING", "scriptfile": "test.dmx"}
+
+### LED Server Configuration
+The configuration command returns the current configuration settings for the LED server.
+
+**Command:** configuration
+
+**Response:** {"command": "configuration", "result": "OK", "port": 5000, "interface": "dummy", 
+"scriptfiledirectory": "/home/user1/AtHomeLED/scriptfiles", "logfile": "at_home_dmx.log", "logconsole": true, "loglevel": "DEBUG"}
+ 
+### List Script Files
+The scriptfiles command returns a list of all of the available script files.
+
+**Command:** scriptfiles
+
+**Response:** {"command": "scriptfiles", "result": "OK", "scriptfiles": ["definitions.dmx", "test-end.dmx", "test.dmx"]}
+
+### Start Script Execution
+The start command is used to start execution of a specified script. Any running script is stopped before the
+new script is started.
+
+**Command:** start script-file-name
+
+**Response:** {"command": "start", "result": "OK", "scriptfile": "test.dmx", "state": "RUNNING"}
+
+**Error Response:** {"command": "start", "result": "ERROR", "messages": ["Script file does not exist"], "scriptfile": "x.dmx"}
+
+Note that the messages property is a list. Script compilation errors will typically produce a multi-line message.
+
+### Stop Script Execution
+The stop command terminates execution of the current script. If no script is running,
+the command is ignored.
+
+**Command:** stop
+
+**Response:** {"command": "stop", "result": "OK", "state": "STOPPED"}
+
+### Close Socket Connection
+The close command closes the TCP socket while leaving the LED Engine in its current
+state. If the LED Engine is running it will continue running. Use the close command
+when you want to start a script and leave it running.
+
+**Command:** close
+
+**Response:** {"command": "close", "result": "OK", "state": "CLOSED"}
+
+### Quit
+The quit command stops the LED Engine and closes the TCP socket. Essentially, it is a stop command
+followed by a close command.
+
+**Command:** quit
+
+**Response:** {"command": "quit", "result": "OK", "state": "CLOSED"}
+
+### Telnet Session Example
+The following console output shows an example of how the remote control interface works.
+
+    telnet localhost 5000
+    Trying ::1...
+    telnet: connect to address ::1: Connection refused
+    Trying 127.0.0.1...
+    Connected to localhost.
+    Escape character is '^]'.
+    scriptfiles
+    {"command": "scriptfiles", "result": "OK", "scriptfiles": ["definitions.dmx", "test-end.dmx", "test.dmx"]}
+    status
+    {"command": "status", "result": "OK", "state": "STOPPED"}
+    start test.dmx
+    {"command": "start", "result": "OK", "scriptfile": "test.dmx", "state": "RUNNING"}
+    stop
+    {"command": "stop", "result": "OK", "state": "STOPPED"}
+    close
+    {"command": "close", "result": "OK", "state": "CLOSED"}
+    Connection closed by foreign host.
+
+## Running AtHomeLED Server as a Daemon
+On Raspbian Jessie you can easily run the AtHomeLED
+server as a daemon. The athomeledD.sh shell script will help you do just that.
+
+Assuming Raspbian:
+
+    sudo cp athomeledD.sh /etc/init.d
+    sudo update-rc.d athomeledD.sh defaults
+    sudo service athomeledD.sh start
