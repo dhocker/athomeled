@@ -48,6 +48,7 @@ class ScriptCompiler:
             "reset": self.reset_stmt,
             "color": self.color_stmt,
             "colorwipe": self.colorwipe_stmt,
+            "theaterchase": self.theaterchase_stmt
         }
 
     @property
@@ -203,7 +204,7 @@ class ScriptCompiler:
 
     def resolve_color(self, message_tokens):
         """
-        Resolve a statement that is subject to substitution by a color
+        Resolve a statement that is subject to substitution by a color, wait and iterations
         :param token:
         :return:
         """
@@ -220,6 +221,9 @@ class ScriptCompiler:
         if len(message_tokens) > wait_index:
             # Resolve wait time
             trans_tokens.append(self.resolve_define(message_tokens[wait_index]))
+            # Resolve iterations
+            if len(message_tokens) > (wait_index + 1):
+                trans_tokens.append(self.resolve_define(message_tokens[wait_index + 1]))
 
         return trans_tokens
 
@@ -466,6 +470,13 @@ class ScriptCompiler:
         return []
 
     def colorwipe_stmt(self, tokens):
+        if len(tokens) < 2:
+            self.script_error("Not enough tokens")
+            return None
+        trans_tokens = self.resolve_color(tokens)
+        return trans_tokens
+
+    def theaterchase_stmt(self, tokens):
         if len(tokens) < 2:
             self.script_error("Not enough tokens")
             return None

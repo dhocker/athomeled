@@ -25,6 +25,7 @@ define wait1 50.0
     colorwipe red wait1
     colorwipe green wait1
     colorwipe blue wait1
+    theaterchase 255 83 13 50.0 20
     reset
 #do-for-end
 

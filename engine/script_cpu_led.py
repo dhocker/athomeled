@@ -34,6 +34,7 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
         # Valid algorithm statements and their handlers
         valid_stmts = {
             "colorwipe": self.colorwipe_stmt,
+            "theaterchase": self.theaterChase,
         }
 
         # Add the algorithms to the valid statement dict
@@ -42,6 +43,7 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
     def colorwipe_stmt(self, stmt):
         """
         Run the colorwipe algorithm. Wipe color across display a pixel at a time.
+        colorwipe r g b [wait]
         """
         # Wait time is optional
         wait_ms = 50.0
@@ -55,4 +57,28 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
             self._leddev.setPixelColor(i, color)
             self._leddev.show()
             time.sleep(wait_ms / 1000.0)
+        return self._stmt_index + 1
+
+    def theaterChase(self, stmt):
+        """
+        Movie theater light style chaser animation.
+        theaterchase r g b [wait iterations]
+        """
+        color = self._leddev.color(stmt[1], stmt[2], stmt[3])
+        wait_ms = 50.0
+        iterations = 10
+        if len(stmt) > 4:
+            wait_ms = stmt[4]
+            iterations = int(stmt[5])
+        for j in range(iterations):
+            if self._terminate_event.isSet():
+                break
+            for q in range(3):
+                for i in range(0, self._leddev.numPixels(), 3):
+                    self._leddev.setPixelColor(i + q, color)
+                    self._leddev.show()
+                time.sleep(wait_ms/1000.0)
+                for i in range(0, self._leddev.numPixels(), 3):
+                    self._leddev.setPixelColor(i + q, 0)
+
         return self._stmt_index + 1
