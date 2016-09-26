@@ -17,6 +17,7 @@ color blue 0 0 255
 
 define wait1 50.0
 define qtr-bright 64
+define half-bright 128
 
 # Main do loop
 # The main do loop runs until the app is terminated.
@@ -29,6 +30,11 @@ define qtr-bright 64
     colorwipe blue wait1
     theaterchase 255 83 13 50.0 20
     reset
+    brightness half-bright
+    colorwipe red wait1
+    colorwipe green wait1
+    colorwipe blue wait1
+    theaterchase 255 83 13 50.0 20
 #do-for-end
 
 # If there is no loop statement, the script ends when there
