@@ -43,8 +43,11 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
         """
         Run the colorwipe algorithm. Wipe color across display a pixel at a time.
         """
-        # Make this a command operand
+        # Wait time is optional
         wait_ms = 50.0
+        if len(stmt) >= 5:
+            wait_ms = stmt[4]
+
         color = self._leddev.color(stmt[1], stmt[2], stmt[3])
         for i in range(self._leddev.numPixels()):
             if self._terminate_event.isSet():

@@ -210,10 +210,16 @@ class ScriptCompiler:
         trans_tokens = [message_tokens[0]]
         if message_tokens[1] in self._vm.colors:
             trans_tokens.extend(self._vm.colors[message_tokens[1]])
+            wait_index = 2
         else:
             trans_tokens.append(int(message_tokens[1]))
             trans_tokens.append(int(message_tokens[2]))
             trans_tokens.append(int(message_tokens[3]))
+            wait_index = 4
+
+        if len(message_tokens) > wait_index:
+            # Resolve wait time
+            trans_tokens.append(self.resolve_define(message_tokens[wait_index]))
 
         return trans_tokens
 
@@ -460,7 +466,7 @@ class ScriptCompiler:
         return []
 
     def colorwipe_stmt(self, tokens):
-        if not ((len(tokens) == 2) or (len(tokens) == 4)):
+        if len(tokens) < 2:
             self.script_error("Not enough tokens")
             return None
         trans_tokens = self.resolve_color(tokens)
