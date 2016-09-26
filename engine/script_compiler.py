@@ -48,7 +48,8 @@ class ScriptCompiler:
             "reset": self.reset_stmt,
             "color": self.color_stmt,
             "colorwipe": self.colorwipe_stmt,
-            "theaterchase": self.theaterchase_stmt
+            "theaterchase": self.theaterchase_stmt,
+            "brightness": self.brightness_stmt,
         }
 
     @property
@@ -168,32 +169,11 @@ class ScriptCompiler:
             return False
         return True
 
-    def resolve_tokens(self, message_tokens):
-        """
-        Translates statement alias references to their actual values.
-        The first token is the statement verb.
-        The second token is a channel number or alias.
-        The remaining tokens are values or value aliases.
-        """
-        trans_tokens = [message_tokens[0]]
-        if message_tokens[1] in self._vm.channels:
-            trans_tokens.append(self._vm.channels[message_tokens[1]])
-        else:
-            trans_tokens.append(int(message_tokens[1]))
-
-        for token in message_tokens[2:]:
-            if token in self._vm.values:
-                trans_tokens.extend(self._vm.values[token])
-            else:
-                trans_tokens.append(int(token))
-
-        return trans_tokens
-
     def resolve_define(self, token):
         """
         Resolve a token that is subject to substitution by a define
         :param token:
-        :return:
+        :return: The resolved value of the token.
         """
         if token in self._vm.defines:
             return self._vm.defines[token]
@@ -496,3 +476,15 @@ class ScriptCompiler:
             return None
         trans_tokens = self.resolve_color_args(tokens)
         return trans_tokens
+
+    def brightness_stmt(self, tokens):
+        """
+        brightness n (0 <= n <= 255)
+        :param tokens:
+        :return:
+        """
+        if len(tokens) < 2:
+            self.script_error("Not enough tokens")
+            return None
+        tokens[1] = int(self.resolve_define(tokens[1]))
+        return tokens

@@ -16,12 +16,14 @@ color green 0 255 0
 color blue 0 0 255
 
 define wait1 50.0
+define qtr-bright 64
 
 # Main do loop
 # The main do loop runs until the app is terminated.
 ## This will run the program every day at hh:mm:ss (24 hour clock)
 #Do-At 14:31:00
 #do-for 00:01:00
+    brightness qtr-bright
     colorwipe red wait1
     colorwipe green wait1
     colorwipe blue wait1

@@ -35,6 +35,7 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
         valid_stmts = {
             "colorwipe": self.colorwipe_stmt,
             "theaterchase": self.theaterChase,
+            "brightness": self.brightness,
         }
 
         # Add the algorithms to the valid statement dict
@@ -81,4 +82,14 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
                 for i in range(0, self._leddev.numPixels(), 3):
                     self._leddev.setPixelColor(i + q, 0)
 
+        return self._stmt_index + 1
+
+    def brightness(self, stmt):
+        """
+        Set brightness level
+        brightness n (n is 0-255)
+        :param stmt:
+        :return:
+        """
+        self._leddev.setBrightness(stmt[1])
         return self._stmt_index + 1
