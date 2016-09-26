@@ -9,11 +9,13 @@
 # See the LICENSE file for more details.
 #
 
+import neopixel
+
 #
-# LED interface driver template
+# LED interface driver for WS2811 controlled strips and strings
 #
 
-class DummyDriver:
+class WS2811:
     """
     A device driver must implement each of the methods in this class.
     The driver class name is arbitrary and generally is not exposed.
@@ -47,9 +49,7 @@ class DummyDriver:
 
     def __init__(self):
         self._strip = None
-        self._order = 'rgb'
-        self._datapin = 10
-        self._clockpin = 11
+        self._datapin = 18
         self._numpixels = 30
 
     @property
@@ -60,38 +60,62 @@ class DummyDriver:
         """
         return self._strip
 
-    def open(self, num_pixels, datapin=10, clockpin=11, order='rgb'):
+    def open(self, num_pixels, datapin=18, order='rgb'):
+        """
+        Open the device
+        :param num_pixels: Total number of pixes on the strip/string
+        :param datapin: Must be a pin that supports PWM. Pin 18 is the only
+        pin on the RPi that supports PWM.
+        :param order: Required for interface compatibility. Not used.
+        :return:
+        """
+        self._strip = neopixel.Adafruit_NeoPixel(num_pixels, datapin)
         self._numpixels = num_pixels
         return self._begin()
 
     def _begin(self):
-        return True
+        return self._strip.begin() == 0
 
     def show(self):
-        return True
+        return self._strip.show() == 0
 
     def numPixels(self):
         return self._numpixels
 
     def setBrightness(self, brightness):
+        self._strip.setBrightness(brightness)
         return True
 
     def setPixelColor(self, index, color_value):
+        self._strip.setPixelColor(index, color)
         return True
 
     def clear(self):
+        for i in range(self._numpixels):
+            self._strip.setPixelColor(i, 0)
+        self._strip.show()
         return True
 
     def close(self):
         """
-        Close and release the current usb device.
+        Close and release the current device.
         :return: None
         """
+        del self._strip
+        self._strip = None
         return True
 
     def color(self, r, g, b, gamma=False):
-        # Based on empiracle observation when the order is rgb
-        # when order='rgb'
+        """
+        Create a composite RGB color value
+        :param r: 0-255
+        :param g: 0-255
+        :param b: 0-255
+        :param gamma: If True, gamma correction is applied.
+        :return:
+        """
+        # Note that this IS NOT the same order as the DotStar
         if gamma:
-            return (DummyDriver.gamma8[b] << 16) | (DummyDriver.gamma8[g] << 8) | DummyDriver.gamma8[r]
-        return (b << 16) | (g << 8) | r
+            return (WS2811.gamma8[r] << 16) | (WS2811.gamma8[g] << 8) | WS2811.gamma8[b]
+        return (r << 16) | (g << 8) | b
+
