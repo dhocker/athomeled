@@ -13,7 +13,6 @@
 # LED interface driver
 #
 
-import ws2811
 import configuration
 import dummy_driver
 import logging
@@ -29,8 +28,11 @@ def get_driver():
     driver = configuration.Configuration.Driver().lower()
     d = None
     if driver == "ws2811" or driver == "neopixels":
+        import ws2811
         d = ws2811.WS2811()
     elif driver == "dotstar" or driver == "apa102":
+        d = dummy_driver.DummyDriver()
+    else:
         d = dummy_driver.DummyDriver()
 
     if d:
