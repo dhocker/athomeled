@@ -202,11 +202,13 @@ class ScriptCompiler:
         else:
             return None
 
-    def resolve_color(self, message_tokens):
+    def resolve_color_args(self, message_tokens, wait=True, iterations=True):
         """
         Resolve a statement that is subject to substitution by a color, wait and iterations
-        :param token:
-        :return:
+        :param message_tokens:
+        :param wait:
+        :param iterations:
+        :return: Effective argument list
         """
         trans_tokens = [message_tokens[0]]
         if message_tokens[1] in self._vm.colors:
@@ -218,12 +220,14 @@ class ScriptCompiler:
             trans_tokens.append(int(message_tokens[3]))
             wait_index = 4
 
-        if len(message_tokens) > wait_index:
+        iterations_index = wait_index
+        if wait and (len(message_tokens) > wait_index):
             # Resolve wait time
             trans_tokens.append(self.resolve_define(message_tokens[wait_index]))
-            # Resolve iterations
-            if len(message_tokens) > (wait_index + 1):
-                trans_tokens.append(self.resolve_define(message_tokens[wait_index + 1]))
+            iterations_index += 1
+        # Resolve iterations
+        if iterations and (len(message_tokens) > (iterations_index)):
+            trans_tokens.append(self.resolve_define(message_tokens[iterations_index]))
 
         return trans_tokens
 
@@ -470,15 +474,25 @@ class ScriptCompiler:
         return []
 
     def colorwipe_stmt(self, tokens):
+        """
+        colorwipe r g b [wait=50.0]
+        :param tokens:
+        :return:
+        """
         if len(tokens) < 2:
             self.script_error("Not enough tokens")
             return None
-        trans_tokens = self.resolve_color(tokens)
+        trans_tokens = self.resolve_color_args(tokens, iterations=False)
         return trans_tokens
 
     def theaterchase_stmt(self, tokens):
+        """
+        theaterchase r g b [wait=50.0 iterations=10]
+        :param tokens:
+        :return:
+        """
         if len(tokens) < 2:
             self.script_error("Not enough tokens")
             return None
-        trans_tokens = self.resolve_color(tokens)
+        trans_tokens = self.resolve_color_args(tokens)
         return trans_tokens
