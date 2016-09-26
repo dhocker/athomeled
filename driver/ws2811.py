@@ -9,6 +9,9 @@
 # See the LICENSE file for more details.
 #
 
+# The neopixel module comes from the rpi_ws281x repo. The original
+# repo can be found at https://github.com/jgarff/rpi_ws281x. A fork
+# of the original repo is at https://github.com/dhocker/rpi_ws281x
 import neopixel
 
 #
@@ -70,11 +73,14 @@ class WS2811:
         :return:
         """
         self._strip = neopixel.Adafruit_NeoPixel(num_pixels, datapin)
+        # print self._strip
         self._numpixels = num_pixels
         return self._begin()
 
     def _begin(self):
-        return self._strip.begin() == 0
+        # The begin() method does not return a useful value
+        self._strip.begin()
+        return True
 
     def show(self):
         return self._strip.show() == 0
@@ -87,7 +93,7 @@ class WS2811:
         return True
 
     def setPixelColor(self, index, color_value):
-        self._strip.setPixelColor(index, color)
+        self._strip.setPixelColor(index, color_value)
         return True
 
     def clear(self):
