@@ -12,6 +12,8 @@
 # import definitions.dmx
 
 color red 255 0 0
+color green 0 255 0
+color blue 0 0 255
 
 # Main do loop
 # The main do loop runs until the app is terminated.
@@ -19,6 +21,8 @@ color red 255 0 0
 #Do-At 14:31:00
 #do-for 00:01:00
     colorwipe red
+    colorwipe green
+    colorwipe blue
     reset
 #do-for-end
 
