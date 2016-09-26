@@ -10,7 +10,7 @@
 #
 
 #
-# Script cpu (executes compiled scripts
+# Script cpu implementation for LED strips/strings (executes compiled scripts)
 #
 
 import script_cpu_base
@@ -20,7 +20,7 @@ import logging
 
 logger = logging.getLogger("led")
 
-class ScriptAlgorithmsCPU(script_cpu_base.ScriptCPUBase):
+class ScriptCPULED(script_cpu_base.ScriptCPUBase):
     def __init__(self, leddev, vm, terminate_event):
         """
         Constructor

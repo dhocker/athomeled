@@ -18,7 +18,7 @@ import logging
 import configuration
 import script_vm
 import script_compiler
-import script_algorithms_cpu
+import script_cpu_led
 import driver.manager
 
 logger = logging.getLogger("led")
@@ -59,7 +59,7 @@ class LEDEngineScript():
         :return:
         """
 
-        cpu = script_algorithms_cpu.ScriptAlgorithmsCPU(self._dev, self._vm, self._terminate_signal)
+        cpu = script_cpu_led.ScriptCPULED(self._dev, self._vm, self._terminate_signal)
         rc = cpu.run()
 
         self.shutdown()
