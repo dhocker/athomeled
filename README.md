@@ -90,12 +90,44 @@ The default is False.
 * **DataPin** - The GPIO pin where data is emitted. On the Raspberry Pi 
 only GPIO 18 has PWM capability so this value is almost always 18.
 
+Example at_home_led.conf:
+
+    {
+      "Configuration":
+      {
+        "Driver": "ws2811",
+        "NumberPixels": "50",
+        "DataPin": "18",
+        "Invert": "false",
+        "ScriptFileDirectory": "/home/pi/rpi/athomeled",
+        "Port": "5000",
+        "LogFile": "/home/pi/rpi/athomeled/at_home_led.log",
+        "LogConsole": "True",
+        "LogLevel": "DEBUG"
+      }
+    }
+
 ### APA102/DotStar
 * **ColorOrder** - Some DotStar strips require a non-RGB color order. The
 default value is RGB.
 * **DataPin** - Not used. The APA102/DotStar driver uses the stock SPI
 pin configuration where GPIO 10 is Clock and GPIO 11 is Data.
 
+Example at_home_led.conf:
+
+    {
+      "Configuration":
+      {
+        "Driver": "dotstar",
+        "NumberPixels": "30",
+        "ColorOrder": "rgb",
+        "ScriptFileDirectory": "/home/pi/rpi/athomeled",
+        "Port": "5000",
+        "LogFile": "/home/pi/rpi/athomeled/at_home_led.log",
+        "LogConsole": "True",
+        "LogLevel": "DEBUG"
+      }
+    }
 
 ## Script Engine <a id="script-engine"></a>
 The script engine executes the contents of a script file. It is a two phase interpreter. The first phase is a
@@ -244,18 +276,76 @@ the following:
     Copyright (c) 2014, jgarff
     All rights reserved.
 
-See [https://github.com/jgarff/rpi_ws281x](https://github.com/jgarff/rpi_ws281x)  for the original source.
+See [https://github.com/jgarff/rpi_ws281x](https://github.com/jgarff/rpi_ws281x) for the original source.
 
-* colorwipe
-* theaterchase
-* rainbow
-* rainbowcycle
-* theaterchaserainbow
+#### Colorwipe
+Fills the LED strip from first to last pixel. 
+The wait (time in milliseconds) value determines
+how fast the wipe occurs.
 
+    colorwipe {r g b | color} [wait=50.0]
+    
+#### Theaterchase
+Movie theater light style chaser animation.
+Fills the LED strip from first to last pixel. 
+The wait (time in milliseconds) value determines
+how fast the chase proceeds. The iterations value determines 
+how many times the algorithm is executed.
+
+    theaterchase {r g b | color} [wait=50.0] [iterations=10]
+    
+#### Rainbow
+Draw a rainbow that fades across all pixels at once. 
+The wait (time in milliseconds) value determines
+how fast the animation proceeds. The iterations value determines 
+how many times the algorithm is executed.
+
+    rainbow {r g b | color} [wait=20.0] [iterations=1]
+    
+#### Rainbowcycle
+Draws a rainbow that uniformly distributes itself across all pixels.
+The wait (time in milliseconds) value determines
+how fast the animation proceeds. The iterations value determines 
+how many times the algorithm is executed.
+
+    rainboxcycle {r g b | color} [wait=20.0] [iterations=5]
+    
+#### Theaterchaserainbow
+This is a rainbow movie theater light style chaser animation.
+The wait (time in milliseconds) value determines
+how fast the chase proceeds.
+
+    theaterchaserainbow [wait=50.0]
+    
 ### Original Algorithms
-* scrollpixels
-* randompixels
-* brightness
+These algorithms were written by the author.
+
+#### Scrollpixels
+Starting from the first pixel, scrolls a group of 5 pixels across the strip. 
+The wait (time in milliseconds) value determines
+how fast the animation proceeds. The iterations value determines 
+how many times the algorithm is executed.
+
+    scrollpixels {r g b | color} [wait=20.0] [iterations=1000]
+    
+#### Randompixels
+Sets a randomly chosen pixel to a randomly generated color.
+Up to half of the pixels on the strip can be lighted at any time.
+The wait (time in milliseconds) value determines
+how fast the animation proceeds. The iterations value determines 
+how many times the algorithm is executed.
+
+    randompixels [wait=20.0] [iterations=500]
+    
+### Brightness
+Sets the brightness of all pixels in the strip. The brightness level
+essentially implements a scaling of the color values.
+
+    brightness n
+    
+Where n is in the range 0 <= n <= 255. The effective brightness is
+approximately n / 255. Thus, a brightness of 128 is about 50% bright and a
+brightness of 64 is about 25% bright.
 
 ### Script File EOF
 When end-of-file is reached, the script terminates. As part of script termination, all LED channels
@@ -289,7 +379,7 @@ The following script runs one hour every day at 6:30pm local time.
         do-for-end
     do-at-end
 
-## Remote Control Interface <a id="remote-control"></a>
+## Remote Control Interface (API) <a id="remote-control"></a>
 The remote control interface uses a simple TCP socket connection to implement a client-server
 arrangement. The client sends simple commands and the server responds with JSON formatted responses.
 A basic telnet app can be used as the client or a UI application can be written.
@@ -318,7 +408,7 @@ The status command returns the current status of the LED Engine.
 
 **Response:** {"command": "status", "result": "OK", "state": "STOPPED"}
 
-**Response:** {"command": "status", "result": "OK", "state": "RUNNING", "scriptfile": "test.dmx"}
+**Response:** {"command": "status", "result": "OK", "state": "RUNNING", "scriptfile": "test.led"}
 
 ### LED Server Configuration
 The configuration command returns the current configuration settings for the LED server.
@@ -326,14 +416,14 @@ The configuration command returns the current configuration settings for the LED
 **Command:** configuration
 
 **Response:** {"command": "configuration", "result": "OK", "port": 5000, "interface": "dummy", 
-"scriptfiledirectory": "/home/user1/AtHomeLED/scriptfiles", "logfile": "at_home_dmx.log", "logconsole": true, "loglevel": "DEBUG"}
+"scriptfiledirectory": "/home/user1/AtHomeLED/scriptfiles", "logfile": "at_home_led.log", "logconsole": true, "loglevel": "DEBUG"}
  
 ### List Script Files
 The scriptfiles command returns a list of all of the available script files.
 
 **Command:** scriptfiles
 
-**Response:** {"command": "scriptfiles", "result": "OK", "scriptfiles": ["definitions.dmx", "test-end.dmx", "test.dmx"]}
+**Response:** {"command": "scriptfiles", "result": "OK", "scriptfiles": ["definitions.led", "test-end.led", "test.led"]}
 
 ### Start Script Execution
 The start command is used to start execution of a specified script. Any running script is stopped before the
@@ -341,9 +431,9 @@ new script is started.
 
 **Command:** start script-file-name
 
-**Response:** {"command": "start", "result": "OK", "scriptfile": "test.dmx", "state": "RUNNING"}
+**Response:** {"command": "start", "result": "OK", "scriptfile": "test.led", "state": "RUNNING"}
 
-**Error Response:** {"command": "start", "result": "ERROR", "messages": ["Script file does not exist"], "scriptfile": "x.dmx"}
+**Error Response:** {"command": "start", "result": "ERROR", "messages": ["Script file does not exist"], "scriptfile": "x.led"}
 
 Note that the messages property is a list. Script compilation errors will typically produce a multi-line message.
 
@@ -382,11 +472,11 @@ The following console output shows an example of how the remote control interfac
     Connected to localhost.
     Escape character is '^]'.
     scriptfiles
-    {"command": "scriptfiles", "result": "OK", "scriptfiles": ["definitions.dmx", "test-end.dmx", "test.dmx"]}
+    {"command": "scriptfiles", "result": "OK", "scriptfiles": ["definitions.led", "test-end.led", "test.led"]}
     status
     {"command": "status", "result": "OK", "state": "STOPPED"}
-    start test.dmx
-    {"command": "start", "result": "OK", "scriptfile": "test.dmx", "state": "RUNNING"}
+    start test.led
+    {"command": "start", "result": "OK", "scriptfile": "test.led", "state": "RUNNING"}
     stop
     {"command": "stop", "result": "OK", "state": "STOPPED"}
     close
