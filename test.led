@@ -32,6 +32,8 @@ define half-bright 128
     rainbowcycle 19.0 4
     theaterchase 255 83 13 50.0 20
     theaterchaserainbow 50.0
+    scrollpixels green 21.0 999
+    randompixels 22.0 501
     reset
 
     brightness half-bright
@@ -42,6 +44,8 @@ define half-bright 128
     rainbowcycle 19.0 4
     theaterchase 255 83 13 50.0 20
     theaterchaserainbow 50.0
+    scrollpixels blue 21.0 999
+    randompixels 22.0 501
     reset
 #do-for-end
 

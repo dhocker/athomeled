@@ -52,6 +52,8 @@ class ScriptCompiler:
             "colorwipe": self.colorwipe_stmt,
             "theaterchase": self.theaterchase_stmt,
             "theaterchaserainbow": self.theaterchaserainbow_stmt,
+            "scrollpixels": self.scrollpixels_stmt,
+            "randompixels": self.randompixels_stmt,
             "brightness": self.brightness_stmt,
         }
 
@@ -534,6 +536,30 @@ class ScriptCompiler:
         else:
             tokens.append(50.0)
         return tokens
+
+    def scrollpixels_stmt(self, tokens):
+        """
+        scrollpixels r g b [wait=20.0 iterations=1000]
+        :param tokens:
+        :return:
+        """
+        if len(tokens) < 2:
+            self.script_error("Not enough tokens")
+            return None
+        trans_tokens = self.resolve_algorithm_args(tokens, color=True, wait=20.0, iterations=1000)
+        return trans_tokens
+
+    def randompixels_stmt(self, tokens):
+        """
+        randompixels [wait=20.0 iterations=500]
+        :param tokens:
+        :return:
+        """
+        if len(tokens) < 2:
+            self.script_error("Not enough tokens")
+            return None
+        trans_tokens = self.resolve_algorithm_args(tokens, color=False, wait=20.0, iterations=500)
+        return trans_tokens
 
     def brightness_stmt(self, tokens):
         """

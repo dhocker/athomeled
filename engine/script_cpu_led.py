@@ -22,7 +22,8 @@
 
 import script_cpu_base
 import time
-import datetime
+import random
+from collections import deque
 import logging
 
 logger = logging.getLogger("led")
@@ -45,6 +46,8 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
             "colorwipe": self.colorwipe_stmt,
             "theaterchase": self.theaterChase,
             "theaterchaserainbow": self.theaterChaseRainbow,
+            "scrollpixels": self.scroll_pixels,
+            "randompixels": self.random_pixels,
             "brightness": self.brightness,
         }
 
@@ -137,8 +140,10 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
         :param stmt:
         :return:
         """
-        wait_ms = int(stmt[1])
+        wait_ms = float(stmt[1])
         for j in range(256):
+            if self._terminate_event.isSet():
+                break
             for q in range(3):
                 for i in range(0, self._leddev.numPixels(), 3):
                     self._leddev.setPixelColor(i + q, self.wheel((i + j) % 255))
@@ -151,6 +156,81 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
     #
     # End of Adafruit derived code
     #
+
+    def scroll_pixels(self, stmt):
+        """
+        Runs 5 LEDs at a time along strip
+        scrollpixels r g b [wait=20.0] [iterations=1000]
+        :param stmt:
+        :return:
+        """
+        color = self._leddev.color(stmt[1], stmt[2], stmt[3])
+        wait_ms = float(stmt[4]) / 1000.0
+        iterations = int(float(stmt[5]))
+
+        head = 0    # Index of first 'on' pixel
+        tail = -5   # Index of last 'off' pixel
+
+        for i in range(iterations):  # Loop for number of iterations
+            if self._terminate_event.isSet():
+                break
+
+            self._leddev.setPixelColor(head, color)  # Turn on 'head' pixel
+            if tail >= 0:
+                self._leddev.setPixelColor(tail, 0)  # Turn off 'tail'
+                self._leddev.show()  # Refresh strip
+            time.sleep(wait_ms)  # Pause for delay time
+
+            head += 1  # Advance head position
+            if (head >= self._leddev.numPixels()):  # Off end of strip?
+                head = 0  # Reset to start
+
+            tail += 1  # Advance tail position
+            if tail >= self._leddev.numPixels():
+                tail = 0  # Off end? Reset
+
+        # Not well documented, but this is how you turn
+        # off everything
+        self._leddev.clear()
+        self._leddev.show()
+        return self._stmt_index + 1
+
+    @classmethod
+    def get_random_int(cls, max_value=100):
+        return int(random.random() * max_value)
+
+    def get_random_color(self):
+        r = int(ScriptCPULED.get_random_int(max_value=255))
+        g = int(ScriptCPULED.get_random_int(max_value=255))
+        b = int(ScriptCPULED.get_random_int(max_value=255))
+        return self._leddev.color(r, g, b)
+
+    def random_pixels(self, stmt):
+        """
+        Show random pixels
+        randompixels [wait=20.0] [iterations=500]
+        :param stmt:
+        :return:
+        """
+        pixels = deque()
+        active_size = int(self._leddev.numPixels() / 2)
+        color = self._leddev.color(255, 0, 0)
+        wait = float(stmt[1]) / 1000.0
+        iterations = int(stmt[2])
+
+        for i in range(iterations):
+            if self._terminate_event.isSet():
+                break
+            if len(pixels) >= active_size:
+                p = pixels.pop()
+                self._leddev.setPixelColor(p, 0)
+            p = ScriptCPULED.get_random_int(max_value=self._leddev.numPixels())
+            pixels.appendleft(p)
+            self._leddev.setPixelColor(p, self.get_random_color())
+            self._leddev.show()
+            time.sleep(wait)
+        self._leddev.clear()
+        return self._stmt_index + 1
 
     def brightness(self, stmt):
         """
