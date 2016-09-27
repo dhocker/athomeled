@@ -9,7 +9,7 @@
 # See the LICENSE file for more details.
 #
 # Some of the algorithms in this module have been derived from
-# Adafruit published software. This code is covered by
+# Adafruit published software. The original code is covered by
 # the following:
 #   Copyright (c) 2014, jgarff
 #   All rights reserved.
@@ -40,6 +40,8 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
 
         # Valid algorithm statements and their handlers
         valid_stmts = {
+            "rainbow": self.rainbow,
+            "rainbowcycle": self.rainbowCycle,
             "colorwipe": self.colorwipe_stmt,
             "theaterchase": self.theaterChase,
             "theaterchaserainbow": self.theaterChaseRainbow,
@@ -63,6 +65,28 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
         else:
             pos -= 170
             return self._leddev.color(0, pos * 3, 255 - pos * 3)
+
+    def rainbow(self, stmt):
+        """Draw rainbow that fades across all pixels at once."""
+        wait_ms = float(stmt[1])
+        iterations = int(stmt[2])
+        for j in range(256 * iterations):
+            for i in range(self._leddev.numPixels()):
+                self._leddev.setPixelColor(i, self.wheel((i + j) & 255))
+            self._leddev.show()
+            time.sleep(wait_ms / 1000.0)
+        return self._stmt_index + 1
+
+    def rainbowCycle(self, stmt):
+        """Draw rainbow that uniformly distributes itself across all pixels."""
+        wait_ms = float(stmt[1])
+        iterations = int(stmt[2])
+        for j in range(256 * iterations):
+            for i in range(self._leddev.numPixels()):
+                self._leddev.setPixelColor(i, self.wheel(((i * 256 / self._leddev.numPixels()) + j) & 255))
+            self._leddev.show()
+            time.sleep(wait_ms / 1000.0)
+        return self._stmt_index + 1
 
     def colorwipe_stmt(self, stmt):
         """

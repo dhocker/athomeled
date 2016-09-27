@@ -47,6 +47,8 @@ class ScriptCompiler:
             "pause": self.pause_stmt,
             "reset": self.reset_stmt,
             "color": self.color_stmt,
+            "rainbow": self.rainbow_stmt,
+            "rainbowcycle": self.rainbowcycle_stmt,
             "colorwipe": self.colorwipe_stmt,
             "theaterchase": self.theaterchase_stmt,
             "theaterchaserainbow": self.theaterchaserainbow_stmt,
@@ -183,32 +185,48 @@ class ScriptCompiler:
         else:
             return None
 
-    def resolve_color_args(self, message_tokens, wait=True, iterations=True):
+    def resolve_algorithm_args(self, message_tokens, color=True, wait=None, iterations=None):
         """
         Resolve a statement that is subject to substitution by a color, wait and iterations
+        command [color] [wait] [iterations]
         :param message_tokens:
-        :param wait:
-        :param iterations:
+        :param wait: If None, there is no wait argument. If not None, there can be a wait
+        argument and the value is the default.
+        :param iterations: If None, there is no iterations argument. If not None, there can be an
+        iterations argument and the value is the default.
         :return: Effective argument list
         """
         trans_tokens = [message_tokens[0]]
-        if message_tokens[1] in self._vm.colors:
-            trans_tokens.extend(self._vm.colors[message_tokens[1]])
-            wait_index = 2
+        if color:
+            if message_tokens[1] in self._vm.colors:
+                trans_tokens.extend(self._vm.colors[message_tokens[1]])
+                wait_index = 2
+            else:
+                trans_tokens.append(int(message_tokens[1]))
+                trans_tokens.append(int(message_tokens[2]))
+                trans_tokens.append(int(message_tokens[3]))
+                wait_index = 4
         else:
-            trans_tokens.append(int(message_tokens[1]))
-            trans_tokens.append(int(message_tokens[2]))
-            trans_tokens.append(int(message_tokens[3]))
-            wait_index = 4
+            wait_index = 1
 
         iterations_index = wait_index
-        if wait and (len(message_tokens) > wait_index):
-            # Resolve wait time
-            trans_tokens.append(self.resolve_define(message_tokens[wait_index]))
-            iterations_index += 1
+        # Resolve wait
+        if wait:
+            if (len(message_tokens) > wait_index):
+                # Resolve wait time
+                trans_tokens.append(self.resolve_define(message_tokens[wait_index]))
+                iterations_index += 1
+            else:
+                # Apply default
+                trans_tokens.append(self.resolve_define(wait))
+
         # Resolve iterations
-        if iterations and (len(message_tokens) > (iterations_index)):
-            trans_tokens.append(self.resolve_define(message_tokens[iterations_index]))
+        if iterations:
+            if (len(message_tokens) > (iterations_index)):
+                trans_tokens.append(self.resolve_define(message_tokens[iterations_index]))
+            else:
+                # Apply default
+                trans_tokens.append(self.resolve_define(iterations))
 
         return trans_tokens
 
@@ -463,7 +481,31 @@ class ScriptCompiler:
         if len(tokens) < 2:
             self.script_error("Not enough tokens")
             return None
-        trans_tokens = self.resolve_color_args(tokens, iterations=False)
+        trans_tokens = self.resolve_algorithm_args(tokens, wait=50.0)
+        return trans_tokens
+
+    def rainbow_stmt(self, tokens):
+        """
+        rainbow [wait=20.0 iterations=1]
+        :param tokens:
+        :return:
+        """
+        if len(tokens) < 1:
+            self.script_error("Not enough tokens")
+            return None
+        trans_tokens = self.resolve_algorithm_args(tokens, color=False, wait=20.0, iterations=1)
+        return trans_tokens
+
+    def rainbowcycle_stmt(self, tokens):
+        """
+        rainbow [wait=20.0 iterations=5]
+        :param tokens:
+        :return:
+        """
+        if len(tokens) < 1:
+            self.script_error("Not enough tokens")
+            return None
+        trans_tokens = self.resolve_algorithm_args(tokens, color=False, wait=20.0, iterations=5)
         return trans_tokens
 
     def theaterchase_stmt(self, tokens):
@@ -475,7 +517,7 @@ class ScriptCompiler:
         if len(tokens) < 2:
             self.script_error("Not enough tokens")
             return None
-        trans_tokens = self.resolve_color_args(tokens)
+        trans_tokens = self.resolve_algorithm_args(tokens, color=True, wait=50.0, iterations=10)
         return trans_tokens
 
     def theaterchaserainbow_stmt(self, tokens):
@@ -503,4 +545,7 @@ class ScriptCompiler:
             self.script_error("Not enough tokens")
             return None
         tokens[1] = int(self.resolve_define(tokens[1]))
+        if tokens[1] < 0 or tokens[1] > 255:
+            self.script_error("Invalid brightness value")
+            return None
         return tokens

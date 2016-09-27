@@ -28,6 +28,8 @@ define half-bright 128
     colorwipe red wait1
     colorwipe green wait1
     colorwipe blue wait1
+    rainbow 21.0 2
+    rainbowcycle 19.0 4
     theaterchase 255 83 13 50.0 20
     theaterchaserainbow 50.0
     reset
@@ -36,6 +38,8 @@ define half-bright 128
     colorwipe red wait1
     colorwipe green wait1
     colorwipe blue wait1
+    rainbow 21.0 2
+    rainbowcycle 19.0 4
     theaterchase 255 83 13 50.0 20
     theaterchaserainbow 50.0
     reset
