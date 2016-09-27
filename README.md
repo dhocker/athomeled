@@ -69,20 +69,38 @@ file is to copy at_home_led.example.conf to at_home_led.conf and edit as require
 
 |Key           | Use         |
 |------------- |-------------|
-| Driver | WS2811 or APA102 or DotStar. Case insensitive. |
+| Driver | WS2811, NeoPixels, APA102 or DotStar. Case insensitive. |
 | NumberPixels | Number of LEDs in the string or strip. |
 | ColorOrder | The order of colors as sent to the LED strip. Only applies to APA102/DotStars. Default and recommended value is rgb. |
 | Invert | Inverts data signal. For WS2811 only. Use when no level shifter is employed. |
+| DataPin | For WS2811 driver, specifies the output data pin. This is almost always GPIO 18.
 | ScriptFileDirectory | Full path to location where script files are stored. Script files should be named with a .led extension. |
 | LogFile | Full path and name of log file. |
 | LogConsole | True or False. If True logging output will be routed to the log file and the console. |
 | LogLevel | Debug, Info, Warn, or Error. Case insensitive. |
 | Port | The TCP port to be used for remote control. The default is 5000. |
 
+## Device Driver Configuration
+### WS2811/NeoPixels
+* **ColorOrder** - Color order on the WS2811 chips is fixed and this value
+is ignored.
+* **Invert** - If an inverting level shifter is used, set this to True.
+For a non-inverting level shifter (e.g 74AHCT125) set this to False.
+The default is False.
+* **DataPin** - The GPIO pin where data is emitted. On the Raspberry Pi 
+only GPIO 18 has PWM capability so this value is almost always 18.
+
+### APA102/DotStar
+* **ColorOrder** - Some DotStar strips require a non-RGB color order. The
+default value is RGB.
+* **DataPin** - Not used. The APA102/DotStar driver uses the stock SPI
+pin configuration where GPIO 10 is Clock and GPIO 11 is Data.
+
+
 ## Script Engine <a id="script-engine"></a>
 The script engine executes the contents of a script file. It is a two phase interpreter. The first phase is a
-compile phase where statements are validated and value definitions are captured. The second phase is an 
-execution phase. Because of the two phase design, definitional statements (channel, value, define) are
+compile phase where statements are validated and definitions are captured. The second phase is an 
+execution phase. Because of the two phase design, definitional statements are
 compiled so that the last definition wins. That is, if a name is defined multiple times, the last
 definition wins.
 
@@ -104,7 +122,7 @@ just like alpha-numeric characters.
 
 The first token of a statement is the statement identifier (a.k.a. an opcode or command).
 
-    statement [argument [argument...argument]]
+    statement [argument-1 [argument-2...argument-n]]
 
 ### Names
 Several statements involve the definition of a name (a constant). The only rule for a name is that it

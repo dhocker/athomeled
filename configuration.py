@@ -171,6 +171,20 @@ class Configuration():
 
     ######################################################################
     @classmethod
+    def Invert(cls):
+        return cls.get_config_var("Invert").lower() == "true"
+
+    ######################################################################
+    @classmethod
+    def DataPin(cls):
+        datapin = cls.get_config_var("DataPin")
+        if not datapin:
+            # The default data pin is GPIO 18
+            return 18
+        return datapin
+
+    ######################################################################
+    @classmethod
     def GetConfigurationFilePath(cls):
         """
         Returns the full path to the configuration file
