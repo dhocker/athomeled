@@ -49,6 +49,7 @@ class ScriptCompiler:
             "color": self.color_stmt,
             "colorwipe": self.colorwipe_stmt,
             "theaterchase": self.theaterchase_stmt,
+            "theaterchaserainbow": self.theaterchaserainbow_stmt,
             "brightness": self.brightness_stmt,
         }
 
@@ -476,6 +477,21 @@ class ScriptCompiler:
             return None
         trans_tokens = self.resolve_color_args(tokens)
         return trans_tokens
+
+    def theaterchaserainbow_stmt(self, tokens):
+        """
+        theaterchaserainbow [wait=50.0]
+        :param tokens:
+        :return:
+        """
+        if len(tokens) < 1:
+            self.script_error("Not enough tokens")
+            return None
+        if len(tokens) > 1:
+            tokens[1] = int(float(tokens[1]))
+        else:
+            tokens.append(50.0)
+        return tokens
 
     def brightness_stmt(self, tokens):
         """

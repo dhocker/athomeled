@@ -29,12 +29,16 @@ define half-bright 128
     colorwipe green wait1
     colorwipe blue wait1
     theaterchase 255 83 13 50.0 20
+    theaterchaserainbow 50.0
     reset
+
     brightness half-bright
     colorwipe red wait1
     colorwipe green wait1
     colorwipe blue wait1
     theaterchase 255 83 13 50.0 20
+    theaterchaserainbow 50.0
+    reset
 #do-for-end
 
 # If there is no loop statement, the script ends when there

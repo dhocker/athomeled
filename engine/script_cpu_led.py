@@ -35,11 +35,23 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
         valid_stmts = {
             "colorwipe": self.colorwipe_stmt,
             "theaterchase": self.theaterChase,
+            "theaterchaserainbow": self.theaterChaseRainbow,
             "brightness": self.brightness,
         }
 
         # Add the algorithms to the valid statement dict
         self._valid_stmts.update(valid_stmts)
+
+    def wheel(self, pos):
+        """Generate rainbow colors across 0-255 positions."""
+        if pos < 85:
+            return self._leddev.color(pos * 3, 255 - pos * 3, 0)
+        elif pos < 170:
+            pos -= 85
+            return self._leddev.color(255 - pos * 3, 0, pos * 3)
+        else:
+            pos -= 170
+            return self._leddev.color(0, pos * 3, 255 - pos * 3)
 
     def colorwipe_stmt(self, stmt):
         """
@@ -82,6 +94,23 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
                 for i in range(0, self._leddev.numPixels(), 3):
                     self._leddev.setPixelColor(i + q, 0)
 
+        return self._stmt_index + 1
+
+    def theaterChaseRainbow(self, stmt):
+        """
+        Rainbow movie theater light style chaser animation.
+        :param stmt:
+        :return:
+        """
+        wait_ms = int(stmt[1])
+        for j in range(256):
+            for q in range(3):
+                for i in range(0, self._leddev.numPixels(), 3):
+                    self._leddev.setPixelColor(i + q, self.wheel((i + j) % 255))
+                    self._leddev.show()
+                time.sleep(wait_ms / 1000.0)
+                for i in range(0, self._leddev.numPixels(), 3):
+                    self._leddev.setPixelColor(i + q, 0)
         return self._stmt_index + 1
 
     def brightness(self, stmt):
