@@ -236,12 +236,23 @@ Reset sets all pixels to off (black).
 
     reset
 
-### Add LED algorithm/command repetoire here
+### Derived Algorithms
+Some of the algorithms in this program have been derived from
+Adafruit published software. The original, unmodified code is covered by
+the following:
+
+    Copyright (c) 2014, jgarff
+    All rights reserved.
+
+See [https://github.com/jgarff/rpi_ws281x](https://github.com/jgarff/rpi_ws281x)  for the original source.
+
 * colorwipe
 * theaterchase
 * rainbow
 * rainbowcycle
 * theaterchaserainbow
+
+### Original Algorithms
 * scrollpixels
 * randompixels
 * brightness

@@ -8,6 +8,13 @@
 #
 # See the LICENSE file for more details.
 #
+# Some of the algorithms in this module have been derived from
+# Adafruit published software. This code is covered by
+# the following:
+#   Copyright (c) 2014, jgarff
+#   All rights reserved.
+# See https://github.com/jgarff/rpi_ws281x for the original source.
+#
 
 #
 # Script cpu implementation for LED strips/strings (executes compiled scripts)
@@ -41,6 +48,10 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
 
         # Add the algorithms to the valid statement dict
         self._valid_stmts.update(valid_stmts)
+
+    #
+    # Start of algorithms derived from Adafruit code
+    #
 
     def wheel(self, pos):
         """Generate rainbow colors across 0-255 positions."""
@@ -112,6 +123,10 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
                 for i in range(0, self._leddev.numPixels(), 3):
                     self._leddev.setPixelColor(i + q, 0)
         return self._stmt_index + 1
+
+    #
+    # End of Adafruit derived code
+    #
 
     def brightness(self, stmt):
         """
