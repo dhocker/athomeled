@@ -1,1 +1,1 @@
-athomesocketserver==1.0.0
+athomesocketserver==1.0.1

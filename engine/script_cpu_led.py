@@ -74,6 +74,8 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
         wait_ms = float(stmt[1])
         iterations = int(stmt[2])
         for j in range(256 * iterations):
+            if self._terminate_event.isSet():
+                break
             for i in range(self._leddev.numPixels()):
                 self._leddev.setPixelColor(i, self.wheel((i + j) & 255))
             self._leddev.show()
@@ -85,6 +87,8 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
         wait_ms = float(stmt[1])
         iterations = int(stmt[2])
         for j in range(256 * iterations):
+            if self._terminate_event.isSet():
+                break
             for i in range(self._leddev.numPixels()):
                 self._leddev.setPixelColor(i, self.wheel(((i * 256 / self._leddev.numPixels()) + j) & 255))
             self._leddev.show()

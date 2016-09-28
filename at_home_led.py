@@ -33,12 +33,10 @@ import sys
 #
 def main():
     global terminate_service
-    global led_engine
 
     logger = logging.getLogger("led")
 
     terminate_service = False
-    led_engine = None
 
     # Clean up when killed
     def term_handler(signum, frame):
@@ -48,11 +46,9 @@ def main():
         terminate_service = True
         sys.exit(0)
 
-    # Orderly clean up of the DMX engine
+    # Orderly clean up of the LED engine
     def CleanUp():
-        global led_engine
-        if led_engine:
-            led_engine.Stop()
+        engine.led_command_handler.LEDCommandHandler.stop_engine()
         logger.info("AtHomeLED shutdown complete")
         logger.info("################################################################################")
         app_logger.Shutdown()
@@ -95,7 +91,9 @@ def main():
     # arrives on the main thread. If we didn't put the TCP server
     # on its own thread we would not be able to shut it down in
     # an orderly fashion.
-    server = SocketServerThread.SocketServerThread(HOST, PORT, engine.led_command_handler.LEDCommandHandler)
+    server = SocketServerThread.SocketServerThread(HOST, PORT,
+                                                   engine.led_command_handler.LEDCommandHandler,
+                                                   connection_time_out=10.0)
 
     # Launch the socket server
     try:
@@ -116,6 +114,7 @@ def main():
         # TODO This needs to move to the clean up function
         server.Stop()
         CleanUp()
+    print "Exiting main()"
 
 
 #
