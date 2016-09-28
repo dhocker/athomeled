@@ -281,40 +281,6 @@ class ScriptCompiler:
             return None
         return []
 
-    def set_stmt(self, tokens):
-        """
-        set channel v1...vn where channel 1-512, vn 0-255
-        :param tokens:
-        :return:
-        """
-        if len(tokens) < 3:
-            self.script_error("Not enough tokens")
-            return None
-        trans_tokens = self.resolve_tokens(tokens)
-        if self.is_valid_channel(trans_tokens[1]) and self.are_valid_values(trans_tokens[2:]):
-            pass
-        else:
-            self.script_error("Invalid channel and/or value(s)")
-            return None
-        return trans_tokens
-
-    def fade_stmt(self, tokens):
-        """
-        fade channel v1...vn where channel 1-512, vn 0-255
-        :param tokens:
-        :return:
-        """
-        if len(tokens) < 3:
-            self.script_error("Not enough tokens")
-            return None
-        trans_tokens = self.resolve_tokens(tokens)
-        if self.is_valid_channel(trans_tokens[1]) and self.are_valid_values(trans_tokens[2:]):
-            pass
-        else:
-            self.script_error("Invalid channel and/or value(s)")
-            return None
-        return trans_tokens
-
     def import_stmt(self, tokens):
         """
         Import a source file directly in-line
@@ -470,7 +436,7 @@ class ScriptCompiler:
         if self.are_valid_colors(tokens[2:]):
             self.add_color(tokens[1], tokens[2:])
         else:
-            self.script_error("Value(s) must be 0-255")
+            self.script_error("Color values must be 0-255")
             return None
         return []
 
