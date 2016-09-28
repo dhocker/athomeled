@@ -1,7 +1,7 @@
 *.pyc
 *.log
 at_home_led.conf
-at_home_led.log*
+athomeled.log*
 Thumbs.db
 *.odt
 *.odg

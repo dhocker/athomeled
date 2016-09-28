@@ -31,7 +31,8 @@ def get_driver():
         import ws2811
         d = ws2811.WS2811()
     elif driver == "dotstar" or driver == "apa102":
-        d = dummy_driver.DummyDriver()
+        import dotstar_driver
+        d = dotstar_driver.DotStar()
     else:
         d = dummy_driver.DummyDriver()
 
