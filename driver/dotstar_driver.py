@@ -9,9 +9,9 @@
 # See the LICENSE file for more details.
 #
 
-# The neopixel module comes from the rpi_ws281x repo. The original
-# repo can be found at https://github.com/jgarff/rpi_ws281x. A fork
-# of the original repo is at https://github.com/dhocker/rpi_ws281x
+# The dotstar module comes from the Adafruit_DotStar_Pi repo. The original
+# repo can be found at https://github.com/adafruit/Adafruit_DotStar_Pi. A fork
+# of the original repo is at https://github.com/dhocker/Adafruit_DotStar_Pi
 from dotstar import Adafruit_DotStar
 from driver_base import DriverBase
 
@@ -22,10 +22,10 @@ from driver_base import DriverBase
 
 class DotStar(DriverBase):
     """
-    A device driver must implement each of the methods in this class.
+    A device driver must implement each of the methods in the DriverBase class.
     The driver class name is arbitrary and generally is not exposed.
-    Add the driver to the app by modifying the driver.get_driver()
-    method.
+    Add the driver to the app by modifying the manager.get_driver()
+    method (the driver factory).
     """
 
     def __init__(self):
@@ -34,10 +34,8 @@ class DotStar(DriverBase):
     def open(self, num_pixels, order='rgb'):
         """
         Open the device
-        :param num_pixels: Total number of pixes on the strip/string
-        :param datapin: Must be a pin that supports PWM. Pin 18 is the only
-        pin on the RPi that supports PWM.
-        :param order: Required for interface compatibility. Not used.
+        :param num_pixels: Total number of pixels on the strip/string.
+        :param order: The order of colors as expected by the strip/string.
         :return:
         """
         self._strip = Adafruit_DotStar(num_pixels, order=order)
