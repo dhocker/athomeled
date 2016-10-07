@@ -1,35 +1,37 @@
 #!/bin/sh
 
 ### BEGIN INIT INFO
-# Provides:          athomedmxD.sh
+# Provides:          athomeledD.sh
 # Required-Start:    $all
 # Required-Stop:     $remote_fs $syslog
 # Should-Start:
 # Should-Stop:
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Manages AtHomeDMX as a daemon
+# Short-Description: Manages AtHomeLED as a daemon
 # Description:       Adapted from the article: http://blog.scphillips.com/2013/07/getting-a-python-script-to-run-in-the-background-as-a-service-on-boot/
 ### END INIT INFO
 
-# Require $all in attempt to get system to a state with all volumes mounted
-# Required-Start:    $remote_fs $syslog
+# Installation
+# Copy this script to /etc/init.d/: sudo cp athomedmxD.sh /etc/init.d/athomeledD.sh
+# Make sure to set its permissions for execution: chmod +x /etc/init.d/athomeledD.sh
+# Register the script: sudo update-rc.d athomeledD.sh defaults
+# Start the daemon: sudo service athomeledD.sh start
 
 # Setup the path to lead with the virtualenv. When it's python is executed it
 # will activate the virtualenv.
-VENV=/home/pi/Virtualenvs/athomedmx
+VENV=/home/pi/Virtualenvs/athomeled
 PATH=$VENV/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # Change the next 4 lines to suit where you install your script and what you want to call it
-DIR=/home/pi/rpi/athomedmx
-DAEMON_SCRIPT=$DIR/at_home_dmx.py
-DAEMON_NAME=athomedmxD.sh
+DIR=/home/pi/rpi/athomeled
+DAEMON_SCRIPT=$DIR/at_home_led.py
+DAEMON_NAME=athomeledD.sh
 PYTHON_INT=$VENV/bin/python
 
 # This next line determines what user the script runs as.
 # Root generally not recommended but necessary if you are using the Raspberry Pi GPIO from Python.
-# In this case we may be using a USB based DMX controller which by default requires root access.
-# This can be worked around with some effort. See https://github.com/dhocker/udmx-pyusb.
+# In this case we we are using GPIO so we have to use root.
 DAEMON_USER=root
 
 # The process ID of the script when it runs is stored here:
