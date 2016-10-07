@@ -13,7 +13,7 @@
 ### END INIT INFO
 
 # Installation
-# Copy this script to /etc/init.d/: sudo cp athomedmxD.sh /etc/init.d/athomeledD.sh
+# Copy this script to /etc/init.d/: sudo cp athomeledD.sh /etc/init.d/athomeledD.sh
 # Make sure to set its permissions for execution: chmod +x /etc/init.d/athomeledD.sh
 # Register the script: sudo update-rc.d athomeledD.sh defaults
 # Start the daemon: sudo service athomeledD.sh start
