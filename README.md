@@ -31,7 +31,7 @@ controller string is used. AtHomeLED supports the following.
 
 How to wire these to a Raspberry Pi is out of the scope of this
 document, but examples of how to wire these strings can be found in
-the references.
+the [references](#references).
 
 AtHomeLED comes with a driver for the both of these LED strings.
 If you want to
@@ -493,3 +493,9 @@ Assuming Raspbian:
     sudo cp athomeledD.sh /etc/init.d
     sudo update-rc.d athomeledD.sh defaults
     sudo service athomeledD.sh start
+
+## References <a id="references"></a>
+[Adafruit DotStars](https://learn.adafruit.com/adafruit-dotstar-leds/dotstar-matrices?view=all)
+[Adafruit NeoPixels](https://learn.adafruit.com/neopixels-on-raspberry-pi)
+[NeoPixel/WS2811 Wiring including level shifter](https://learn.adafruit.com/neopixels-on-raspberry-pi/wiring)
+[74AHCT125 level shifter](https://www.adafruit.com/product/1787)
