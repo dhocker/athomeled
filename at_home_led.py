@@ -26,6 +26,7 @@ import signal
 import os
 import time
 import sys
+import json
 
 
 #
@@ -52,6 +53,25 @@ def main():
         logger.info("AtHomeLED shutdown complete")
         logger.info("################################################################################")
         app_logger.Shutdown()
+
+    def autorun_script():
+        """
+        Conditionally run an LED script at start up.
+        :return:
+        """
+        script = configuration.Configuration.AutoRun()
+        if script:
+            dc = engine.led_command_handler.LEDCommandHandler()
+            response = dc.execute_command("", "start {0}".format(script))
+            r = json.loads(str(response))
+            success = r["result"] == "OK"
+            if success:
+                logger.info("AutoRun script {0} started".format(script))
+            else:
+                logger.error("AutoRun script failed to start script: {0}".format(script))
+                logger.error(r["messages"][0])
+            return success
+        return True
 
     # Change the current directory so we can find the configuration file.
     # For Linux we should probably put the configuration file in the /etc directory.
@@ -99,6 +119,10 @@ def main():
     try:
         # This runs "forever", until ctrl-c or killed
         server.Start()
+
+        # Run AutoRun script
+        autorun_script()
+
         terminate_service = False
         while not terminate_service:
             # We do a lot of sleeping to avoid using too much CPU :-)
