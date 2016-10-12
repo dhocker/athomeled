@@ -79,6 +79,7 @@ file is to copy at_home_led.example.conf to at_home_led.conf and edit as require
 | LogConsole | True or False. If True logging output will be routed to the log file and the console. |
 | LogLevel | Debug, Info, Warn, or Error. Case insensitive. |
 | Port | The TCP port to be used for remote control. The default is 5000. |
+| AutoRun | Script file to be started when AtHomeDMX starts. The default is none. |
 
 ## Device Driver Configuration
 ### WS2811/NeoPixels
