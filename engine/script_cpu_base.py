@@ -41,6 +41,10 @@ class ScriptCPUBase:
         # Do-At control
         self._do_at_active = False
         self._do_at_stmt = -1
+        # Do-Until control
+        self._do_until_active = False
+        self._run_until_time = None
+        self._do_until_stmt = -1
         # Do-forever control
         self._do_forever_stmt = -1
 
@@ -55,6 +59,8 @@ class ScriptCPUBase:
             "do-for-end": self.do_for_end_stmt,
             "do-at": self.do_at_stmt,
             "do-at-end": self.do_at_end_stmt,
+            "do-until": self.do_until_stmt,
+            "do-until-end": self.do_until_end_stmt,
             "do-forever": self.do_forever_stmt,
             "do-forever-end": self.do_forever_end_stmt,
             "pause": self.pause_stmt,
@@ -145,7 +151,7 @@ class ScriptCPUBase:
         # Determine the end time
         # Use the start time and a timedelta that allows second accuracy
         now = datetime.datetime.now()
-        self._do_for_elapsed_time = datetime.timedelta(seconds=(stmt[1].tm_hour * 60 * 60) + (stmt[1].tm_min * 60) + stmt[1].tm_sec)
+        self._do_for_elapsed_time = datetime.timedelta(seconds=(stmt[1].hour * 60 * 60) + (stmt[1].minute * 60) + stmt[1].second)
         self._do_for_start_time = now
         logger.info("Do-For %s", str(self._do_for_elapsed_time))
 
@@ -178,7 +184,7 @@ class ScriptCPUBase:
     def do_at_stmt(self, stmt):
         """
         Executes a script block when a given time-of-day arrives.
-        :param stmt: stmt[1] is a tm_struct defining the time of day. The hour and minute is
+        :param stmt: stmt[1] is a datetime defining the time of day. The hour and minute is
         all that is used.
         :return:
         """
@@ -189,7 +195,7 @@ class ScriptCPUBase:
 
         # Determine the start time
         now = datetime.datetime.now()
-        run_start_time = datetime.datetime(now.year, now.month, now.day, stmt[1].tm_hour, stmt[1].tm_min, stmt[1].tm_sec)
+        run_start_time = datetime.datetime(now.year, now.month, now.day, stmt[1].hour, stmt[1].minute, stmt[1].second)
         # If the start time is earlier than now, adjust to tomorrow
         if run_start_time < now:
             # Start is tomorrow
@@ -233,6 +239,59 @@ class ScriptCPUBase:
         # Execution returns to the matching Do-At statement
         return self._do_at_stmt
 
+    def do_until_stmt(self, stmt):
+        """
+        Executes a script block until a given time-of-day arrives.
+        :param stmt: stmt[1] is a datetime defining the time of day. The hour and minute is
+        all that is used.
+        :return:
+        """
+
+        # If we are under Do-Until control, ignore
+        if self._do_until_active:
+            return self._stmt_index + 1
+
+        # Determine the until time
+        now = datetime.datetime.now()
+        self._run_until_time = datetime.datetime(now.year, now.month, now.day, stmt[1].hour, stmt[1].minute, stmt[1].second)
+        # If the start time is earlier than now, adjust to tomorrow
+        if self._run_until_time < now:
+            # Until time is tomorrow
+            self._run_until_time += datetime.timedelta(days=1)
+
+        # We're now under Do-Until control
+        self._do_until_active = True
+        self._do_until_stmt = self._stmt_index
+
+        logger.info("Running until %s...", str(self._run_until_time))
+
+        # Execution continues at the next statement after the Do-Until
+        return self._stmt_index + 1
+
+    def do_until_end_stmt(self, stmt):
+        """
+        Serves as the foot of the Do-Until loop.
+        :param stmt:
+        :return:
+        """
+        if not self._do_until_active:
+            logger.info("No matching Do-Until statement")
+            return -1
+
+        # Terminate break out
+        if self._terminate_event.isSet():
+            return self._stmt_index + 1
+
+        # Check for until time to arrive. Break out when it does.
+        now = datetime.datetime.now()
+        if now >= self._run_until_time:
+            logger.info("Do-Until occurs at %s", str(now))
+            # On to the next sequential statement
+            return self._stmt_index + 1
+
+        # Execution returns to the matching Do-Until statement
+        return self._do_until_stmt
+
     def end_of_program_check(self, next_index):
         """
         End of program occurs when the next statement index is past
@@ -271,7 +330,7 @@ class ScriptCPUBase:
         # Determine the time when the pause will end
         now = datetime.datetime.now()
         pause_time = datetime.timedelta(
-            seconds=(stmt[1].tm_hour * 60 * 60) + (stmt[1].tm_min * 60) + stmt[1].tm_sec)
+            seconds=(stmt[1].hour * 60 * 60) + (stmt[1].minute * 60) + stmt[1].second)
         logger.info("Pausing for %s", str(pause_time))
 
         end_time = datetime.datetime.now() + pause_time
