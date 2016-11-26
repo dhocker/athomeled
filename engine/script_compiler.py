@@ -535,7 +535,7 @@ class ScriptCompiler:
             self.script_error("Not enough tokens")
             return None
         if len(tokens) > 1:
-            tokens[1] = int(float(tokens[1]))
+            tokens[1] = int(self.resolve_define(tokens[1]))
         else:
             tokens.append(50.0)
         return tokens

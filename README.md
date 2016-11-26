@@ -57,10 +57,18 @@ want to make changes, a good text editor of your choice is all that is really re
 
 AtHomeLED is written in Python 2.7. A suitable execution environment would use 
 virtualenv and virtualenvwrapper to create a working virtual environment. 
-The requirements.txt file can be used with pip to create the required virtual environment with all dependencies.
-AtHomeLED requires the [athomesocketserver](https://www.github.com/dhocker/athomesocketserver) package.
 
 AtHomeLED has been tested on Raspbian Jessie.
+
+## Dependencies
+The requirements.txt file can be used with pip to create the required virtual environment with 
+some but not all all dependencies.
+
+The following dependencies must be individually and manually installed.
+
+* [athomesocketserver](https://www.github.com/dhocker/athomesocketserver)
+* [rpi_ws281x](https://github.com/dhocker/rpi_ws281x) a fork of [jgarff/rpi_ws281x](https://github.com/jgarff/rpi_ws281x)
+* [Adafruit_DotStar_Pi](https://github.com/adafruit/Adafruit_DotStar_Pi)
 
 ## Configuration <a id="configuration"></a>
 
