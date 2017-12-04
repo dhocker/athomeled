@@ -40,9 +40,10 @@ class WS2811(DriverBase):
         :param order: Required for interface compatibility. Not used.
         :return:
         """
-        self._strip = neopixel.Adafruit_NeoPixel(num_pixels, datapin)
+        self._strip = neopixel.Adafruit_NeoPixel(num_pixels, datapin, dma=10)
         # print self._strip
         self._numpixels = num_pixels
+        self._datapin = datapin
         return self._begin()
 
     def _begin(self):
@@ -52,6 +53,7 @@ class WS2811(DriverBase):
 
     def show(self):
         return self._strip.show() == 0
+        return True
 
     def numPixels(self):
         return self._numpixels
@@ -61,7 +63,12 @@ class WS2811(DriverBase):
         return True
 
     def setPixelColor(self, index, color_value):
-        self._strip.setPixelColor(index, color_value)
+        if index >= self._numpixels:
+            # TODO Change this to a log record
+            # print "Pixel index out of range"
+            return False
+        else:
+            self._strip.setPixelColor(index, color_value)
         return True
 
     def clear(self):
@@ -75,7 +82,6 @@ class WS2811(DriverBase):
         Close and release the current device.
         :return: None
         """
-        del self._strip
         self._strip = None
         return True
 
