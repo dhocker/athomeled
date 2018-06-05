@@ -37,7 +37,7 @@ def get_driver():
         d = dummy_driver.DummyDriver()
 
     if d:
-        logger.info("%s driver created", driver)
+        logger.info("%s driver created", d.name)
     else:
         logger.error("%s is not a recognized LED interface type", driver)
 

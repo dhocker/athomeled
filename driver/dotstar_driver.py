@@ -31,6 +31,10 @@ class DotStar(DriverBase):
     def __init__(self):
         DriverBase.__init__(self)
 
+    @property
+    def name(self):
+        return "DotstarDriver"
+
     def open(self, num_pixels, order='rgb'):
         """
         Open the device

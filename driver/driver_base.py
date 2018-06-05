@@ -53,6 +53,10 @@ class DriverBase:
         self._numpixels = 30
 
     @property
+    def name(self):
+        return ""
+
+    @property
     def Device(self):
         """
         Returns the wrapped usb.core.Device instance.

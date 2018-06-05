@@ -29,6 +29,10 @@ class DummyDriver(DriverBase):
         DriverBase.__init__(self)
 
     @property
+    def name(self):
+        return "DummyDeviceDriver"
+
+    @property
     def Device(self):
         """
         Returns the wrapped usb.core.Device instance.

@@ -31,6 +31,10 @@ class WS2811(DriverBase):
         DriverBase.__init__(self)
         self._datapin = 18
 
+    @property
+    def name(self):
+        return "WS2811Driver"
+
     def open(self, num_pixels, datapin=18, order='rgb'):
         """
         Open the device
