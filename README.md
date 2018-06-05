@@ -328,6 +328,33 @@ how fast the chase proceeds.
     
 ### Original Algorithms
 These algorithms were written by the author.
+#### SineWave
+Generates sequential colors using a sine wave based algorithm. See the
+article
+[Making annoying rainbows in javascript](https://krazydad.com/tutorials/makecolors.php)
+for an in depth discussion behind the algorithm.
+
+    sinewave [wait=200.0] [iterations=300] [width=127] [center=128]
+
+The wait (time in milliseconds) value determines
+how fast the sine wave moves. The iterations value determines
+how many times the algorithm is executed. A sine wave cycle depends
+on the number pixels/LEDs in the string. For example, if the string has
+30 pixels, a full sine wave cycle will occur every 30 iterations.
+For the math inclined, the full cycle covers 2π radians and the
+algorithm moves (2π / number-of-pixels) radians every iteration.
+
+The center value determines the value that is equivalent to the zero
+crossing of the sine wave. Since RGB values are 0-255, a value of 128
+sets the middle of the range as the crossing point. In other words,
+the values of R, G and B will oscillate around this value.
+
+The width value establish how far away from the center the center
+the sine wave can oscillate. Essentially, it establishses the
+range of RGB values.
+
+Since the maximum RGB component value is 255, the value of
+width + center must be less than or equal to 255.
 
 #### Scrollpixels
 Starting from the first pixel, scrolls a group of 5 pixels across the strip. 
@@ -503,7 +530,8 @@ Assuming Raspbian:
     sudo service athomeledD.sh start
 
 ## References <a id="references"></a>
-[Adafruit DotStars](https://learn.adafruit.com/adafruit-dotstar-leds/dotstar-matrices?view=all)
-[Adafruit NeoPixels](https://learn.adafruit.com/neopixels-on-raspberry-pi)
-[NeoPixel/WS2811 Wiring including level shifter](https://learn.adafruit.com/neopixels-on-raspberry-pi/wiring)
-[74AHCT125 level shifter](https://www.adafruit.com/product/1787)
+* [Adafruit DotStars](https://learn.adafruit.com/adafruit-dotstar-leds/dotstar-matrices?view=all)
+* [Adafruit NeoPixels](https://learn.adafruit.com/neopixels-on-raspberry-pi)
+* [NeoPixel/WS2811 Wiring including level shifter](https://learn.adafruit.com/neopixels-on-raspberry-pi/wiring)
+* [74AHCT125 level shifter](https://www.adafruit.com/product/1787)
+* [Making annoying rainbows in javascript](https://krazydad.com/tutorials/makecolors.php).
