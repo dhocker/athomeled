@@ -71,6 +71,8 @@ def main():
                 logger.error("AutoRun script failed to start script: {0}".format(script))
                 logger.error(r["messages"][0])
             return success
+        else:
+            logger.info("No autorun script is configured")
         return True
 
     # Change the current directory so we can find the configuration file.
