@@ -115,7 +115,7 @@ def main():
     # an orderly fashion.
     server = SocketServerThread.SocketServerThread(HOST, PORT,
                                                    engine.led_command_handler.LEDCommandHandler,
-                                                   connection_time_out=10.0)
+                                                   connection_time_out=configuration.Configuration.Timeout())
 
     # Launch the socket server
     try:
