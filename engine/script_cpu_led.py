@@ -274,5 +274,6 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
             self._leddev.show()
             colorx = (colorx + 1) % len(color_list)
             time.sleep(wait_ms)
+        self._leddev.clear()
 
         return self._stmt_index + 1
