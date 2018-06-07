@@ -21,6 +21,7 @@
 #
 
 import script_cpu_base
+from color_cycler import ColorCycler
 import time
 import random
 from collections import deque
@@ -49,6 +50,7 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
             "scrollpixels": self.scroll_pixels,
             "randompixels": self.random_pixels,
             "brightness": self.brightness,
+            "sinewave": self.sinewave,
         }
 
         # Add the algorithms to the valid statement dict
@@ -244,4 +246,33 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
         :return:
         """
         self._leddev.setBrightness(stmt[1])
+        return self._stmt_index + 1
+
+    def sinewave(self, stmt):
+        """
+        sinewave [wait=200.0] [iterations=300] [width=127] [center=128]
+        :param stmt:
+        :return:
+        """
+        wait_ms = float(stmt[1]) / 1000.0
+        iterations = int(float(stmt[2]))
+        width = float(stmt[3])
+        center = float(stmt[4])
+        pixels = self._leddev.numPixels()
+
+        color_gen = ColorCycler()
+        # In binary RGB format. May require reordering.
+        color_list = color_gen.create_color_list(center=center, width=width, colors=pixels)
+
+        colorx = 0
+        for i in range(iterations):
+            if self._terminate_event.isSet():
+                break
+            for cx in range(pixels):
+                modx = (colorx + cx) % len(color_list)
+                self._leddev.setPixelColor(cx, color_list[modx])
+            self._leddev.show()
+            colorx = (colorx + 1) % len(color_list)
+            time.sleep(wait_ms)
+
         return self._stmt_index + 1

@@ -93,6 +93,7 @@ class ScriptCPUBase:
                 # Since the compile phase fails bad statements, the
                 # only reason to be here is for a statement that
                 # has not yet been implemented.
+                logger.debug("%s statement is not implemented", stmt[0])
                 next_index = self._stmt_index + 1
 
             # End of program check

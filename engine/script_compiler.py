@@ -57,6 +57,7 @@ class ScriptCompiler:
             "scrollpixels": self.scrollpixels_stmt,
             "randompixels": self.randompixels_stmt,
             "brightness": self.brightness_stmt,
+            "sinewave": self.sinewave_stmt,
         }
 
     @property
@@ -178,7 +179,7 @@ class ScriptCompiler:
 
     def resolve_define(self, token):
         """
-        Resolve a token that is subject to substitution by a define
+        Resolve a token that is subject to substitution by a define.
         :param token:
         :return: The resolved value of the token.
         """
@@ -228,9 +229,15 @@ class ScriptCompiler:
         if iterations:
             if (len(message_tokens) > (iterations_index)):
                 trans_tokens.append(self.resolve_define(message_tokens[iterations_index]))
+                iterations_index += 1
             else:
                 # Apply default
                 trans_tokens.append(self.resolve_define(iterations))
+
+        # Handle remaining tokens, if any
+        while (len(message_tokens) > (iterations_index)):
+            trans_tokens.append(self.resolve_define(message_tokens[iterations_index]))
+            iterations_index += 1
 
         return trans_tokens
 
@@ -539,6 +546,25 @@ class ScriptCompiler:
         else:
             tokens.append(50.0)
         return tokens
+
+    def sinewave_stmt(self, tokens):
+        """
+        sinewave [wait=200.0] [iterations=300] [width=127] [center=128]
+        :param tokens:
+        :return:
+        """
+        trans_tokens = self.resolve_algorithm_args(tokens, color=False, wait=200.0, iterations=300)
+        # Tokens: [0] = sinewave [1] = wait [2] = iterations [3] = width [4] = center
+
+        # Cover defaults for width and center
+        if len(trans_tokens) < 4:
+            # width is defaulted
+            trans_tokens.append(127)
+        if len(trans_tokens) < 5:
+            # center is defaulted
+            trans_tokens.append(128)
+
+        return trans_tokens
 
     def scrollpixels_stmt(self, tokens):
         """

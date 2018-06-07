@@ -165,6 +165,21 @@ The first token of a statement is the statement identifier (a.k.a. an opcode or 
 
     statement [argument-1 [argument-2...argument-n]]
 
+All arguments are positional. In the documentation an argument in square brackets
+is optional. For example, [wait=20.0] identifies a positional parameter
+for a wait time with a default value of 20.0. The "wait=" part of
+the parameter description is not a part of the actual argument. It
+is there merely to identify the purpose of the argument.
+
+    statement argument-1 25.0
+
+This statement has two arguments where the second argument is a
+wait time of 25.0. In the documentation, it would be described as:
+
+    statement argument-1 [wait=20.0]
+
+indicating that the default wait time is 20.0.
+
 ### Names
 Several statements involve the definition of a name (a constant). The only rule for a name is that it
 cannot contain blanks. A name can contain any alpha-numeric or special character.
