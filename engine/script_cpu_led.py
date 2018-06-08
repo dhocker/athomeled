@@ -21,7 +21,7 @@
 #
 
 import script_cpu_base
-from color_cycler import ColorCycler
+from colorcyclers.sine_color_cycler import SineColorCycler
 import time
 import random
 from collections import deque
@@ -260,7 +260,7 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
         center = float(stmt[4])
         pixels = self._leddev.numPixels()
 
-        color_gen = ColorCycler()
+        color_gen = SineColorCycler()
         # In binary RGB format. May require reordering.
         color_list = color_gen.create_color_list(center=center, width=width, colors=pixels)
 
