@@ -1,6 +1,7 @@
+# coding: utf-8
 #
 # AtHomeLED - LED string script engine
-# Copyright (C) 2016  Dave Hocker (email: AtHomeX10@gmail.com)
+# Copyright © 2016, 2018  Dave Hocker (email: AtHomeX10@gmail.com)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,7 +19,7 @@ logger = logging.getLogger("led")
 
 _disclaimer = [
     "",
-    "AtHomeLED Copyright (C) 2016 Dave Hocker (AtHomeX10@gmail.com)",
+    "AtHomeLED Copyright © 2016, 2018 Dave Hocker (AtHomeX10@gmail.com)",
     "Version {0}".format(version.GetVersion()),
     "",
     "This program comes with ABSOLUTELY NO WARRANTY; for details see the LICENSE file.",
@@ -33,7 +34,7 @@ def DisplayDisclaimer():
     Show the disclaimer as recommended by the GPL v3 license
     """
     for line in _disclaimer:
-        print line
+        print(line)
 
 
 def LogDisclaimer():

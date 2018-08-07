@@ -9,7 +9,7 @@
 # See the LICENSE file for more details.
 #
 
-from driver_base import DriverBase
+from .driver_base import DriverBase
 
 #
 # LED interface driver template

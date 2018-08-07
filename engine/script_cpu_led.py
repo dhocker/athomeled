@@ -20,7 +20,7 @@
 # Script cpu implementation for LED strips/strings (executes compiled scripts)
 #
 
-import script_cpu_base
+from . import script_cpu_base
 from colorcyclers.sine_color_cycler import SineColorCycler
 import time
 import random

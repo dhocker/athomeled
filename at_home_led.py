@@ -83,18 +83,21 @@ def main():
     # Load the configuration file
     configuration.Configuration.LoadConfiguration()
 
-    # Per GPL, show the disclaimer
-    disclaimer.disclaimer.DisplayDisclaimer()
-    print("Use ctrl-c to shutdown engine\n")
-
     # Activate logging to console or file
     # Logging.EnableLogging()
     app_logger.EnableEngineLogging()
+
+    # Per GPL, show the disclaimer
+    disclaimer.disclaimer.DisplayDisclaimer()
+    print("Use ctrl-c to shutdown engine\n")
 
     logger.info("################################################################################")
 
     # For additional coverage, log the disclaimer
     disclaimer.disclaimer.LogDisclaimer()
+
+    logger.info("Python version: %s", str(sys.version))
+    print("Python version:", str(sys.version))
 
     logger.info("Starting up...")
 
@@ -140,7 +143,7 @@ def main():
         # TODO This needs to move to the clean up function
         server.Stop()
         CleanUp()
-    print "Exiting main()"
+    print("Exiting main()")
 
 
 #

@@ -17,7 +17,7 @@
 import threading
 import logging
 import configuration
-import led_engine_script
+from . import led_engine_script
 
 logger = logging.getLogger("led")
 

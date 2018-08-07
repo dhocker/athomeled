@@ -13,9 +13,9 @@
 # Engine class encapsulating script engine thread
 #
 
-import led_engine_thread
-import script_vm
-import script_compiler
+from . import led_engine_thread
+from . import script_vm
+from . import script_compiler
 import logging
 import sys
 
