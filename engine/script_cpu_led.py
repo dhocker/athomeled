@@ -92,7 +92,7 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
             if self._terminate_event.isSet():
                 break
             for i in range(self._leddev.numPixels()):
-                self._leddev.setPixelColor(i, self.wheel(((i * 256 / self._leddev.numPixels()) + j) & 255))
+                self._leddev.setPixelColor(i, self.wheel(int((i * 256 / self._leddev.numPixels()) + j) & 255))
             self._leddev.show()
             time.sleep(wait_ms / 1000.0)
         return self._stmt_index + 1

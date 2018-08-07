@@ -141,8 +141,9 @@ class ScriptCompiler:
         """
         Adds a color to the color dictionary.
         """
-        int_values = map(int, color_values)
-        self._vm.colors[name] = int_values
+        # In Python 3, the iterator returned by map can only be used once
+        self._vm.colors[name] = []
+        self._vm.colors[name].extend(map(int, color_values))
 
     def add_define(self, name, value):
         """
