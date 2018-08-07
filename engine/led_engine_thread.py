@@ -46,7 +46,10 @@ class LEDEngineThread(threading.Thread):
             return
 
         # run the script until termination is signaled
-        self._script.execute()
+        try:
+            self._script.execute()
+        except Exception as ex:
+            logger.error(str(ex))
         self.terminate_signal.set()
 
     ########################################################################
