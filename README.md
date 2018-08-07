@@ -1,5 +1,5 @@
 # AtHomeLED - LED Light Strip Server
-Copyright © 2016 by Dave Hocker
+Copyright © 2016, 2018 by Dave Hocker
 
 ## Overview
 The AtHomeLED server is designed to run simple LED strip light shows on
@@ -67,6 +67,7 @@ some but not all all dependencies.
 The following dependencies must be individually and manually installed.
 
 * [athomesocketserver](https://www.github.com/dhocker/athomesocketserver)
+* [ColorCycler](https://github.com/dhocker/colorcycler.git)
 * [rpi_ws281x](https://github.com/dhocker/rpi_ws281x) a fork of [jgarff/rpi_ws281x](https://github.com/jgarff/rpi_ws281x)
 * [Adafruit_DotStar_Pi](https://github.com/adafruit/Adafruit_DotStar_Pi)
 
@@ -81,12 +82,13 @@ file is to copy at_home_led.example.conf to at_home_led.conf and edit as require
 | NumberPixels | Number of LEDs in the string or strip. |
 | ColorOrder | The order of colors as sent to the LED strip. Only applies to APA102/DotStars. Default and recommended value is rgb. |
 | Invert | Inverts data signal. For WS2811 only. Use when no level shifter is employed. |
-| DataPin | For WS2811 driver, specifies the output data pin. This is almost always GPIO 18.
+| DataPin | For WS2811 driver, specifies the output data pin. This is almost always GPIO 18 as it must support PWM. |
 | ScriptFileDirectory | Full path to location where script files are stored. Script files should be named with a .led extension. |
 | LogFile | Full path and name of log file. |
 | LogConsole | True or False. If True logging output will be routed to the log file and the console. |
 | LogLevel | Debug, Info, Warn, or Error. Case insensitive. |
 | Port | The TCP port to be used for remote control. The default is 5000. |
+| Timeout | How long a remote control connection is held open when there is no activity. |
 | AutoRun | Script file to be started when AtHomeDMX starts. The default is none. |
 
 ## Device Driver Configuration
