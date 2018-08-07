@@ -13,7 +13,7 @@
 # repo can be found at https://github.com/jgarff/rpi_ws281x. A fork
 # of the original repo is at https://github.com/dhocker/rpi_ws281x
 import neopixel
-from driver_base import DriverBase
+from .driver_base  import DriverBase
 
 #
 # LED interface driver for WS2811 controlled strips and strings
