@@ -17,7 +17,7 @@
 
 import threading
 import logging
-import configuration
+import app_trace
 from app_trace import log_trace
 from . import led_engine_script
 
@@ -52,7 +52,7 @@ class LEDEngineThread(threading.Thread):
             self._script.execute()
         except Exception as ex:
             logger.error(str(ex))
-            log_trace(logger)
+            app_trace.log_trace(logger, ex=ex)
         self.terminate_signal.set()
 
     ########################################################################
