@@ -18,6 +18,7 @@
 import athomesocketserver.SocketServerThread as SocketServerThread
 import configuration
 import app_logger
+import app_trace
 import engine.led_engine
 import engine.led_command_handler
 import disclaimer.disclaimer
@@ -138,6 +139,7 @@ def main():
         logger.error("Unhandled exception occurred")
         logger.error(e.strerror)
         logger.error(sys.exc_info()[0])
+        app_trace.log_trace(logger, ex=e)
     finally:
         # We actually get here through ctrl-c or process kill (SIGTERM)
         # TODO This needs to move to the clean up function

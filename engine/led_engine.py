@@ -16,6 +16,7 @@
 from . import led_engine_thread
 from . import script_vm
 from . import script_compiler
+import app_trace
 import logging
 import sys
 
@@ -65,6 +66,7 @@ class LEDEngine:
             logger.error("Unhandled exception starting LED engine")
             logger.error(e)
             logger.error(sys.exc_info()[0])
+            app_trace.log_trace(logger, ex=e)
             return False
         return True
 

@@ -1,6 +1,7 @@
+# coding: utf-8
 #
 # AtHomeLED - LED script engine
-# Copyright (C) 2016  Dave Hocker
+# Copyright © 2016, 2018  Dave Hocker
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,7 +17,8 @@
 
 import threading
 import logging
-import configuration
+import app_trace
+from app_trace import log_trace
 from . import led_engine_script
 
 logger = logging.getLogger("led")
@@ -50,6 +52,7 @@ class LEDEngineThread(threading.Thread):
             self._script.execute()
         except Exception as ex:
             logger.error(str(ex))
+            app_trace.log_trace(logger, ex=ex)
         self.terminate_signal.set()
 
     ########################################################################
