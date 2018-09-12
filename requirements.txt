@@ -1,4 +1,4 @@
 athomesocketserver==1.1.0
 dotstar==0.2
-rpi-ws281x==1.1.0
+rpi-ws281x==4.0.0
 colorcycler>=0.0.9
