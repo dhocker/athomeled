@@ -12,7 +12,7 @@
 # The neopixel module comes from the rpi_ws281x repo. The original
 # repo can be found at https://github.com/jgarff/rpi_ws281x. A fork
 # of the original repo is at https://github.com/dhocker/rpi_ws281x
-import neopixel
+import rpi_ws281x
 from .driver_base  import DriverBase
 
 #
@@ -44,7 +44,7 @@ class WS2811(DriverBase):
         :param order: Required for interface compatibility. Not used.
         :return:
         """
-        self._strip = neopixel.Adafruit_NeoPixel(num_pixels, datapin, dma=10)
+        self._strip = rpi_ws281x.Adafruit_NeoPixel(num_pixels, datapin, dma=10)
         # print self._strip
         self._numpixels = num_pixels
         self._datapin = datapin
