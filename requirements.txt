@@ -1,5 +1,5 @@
-athomesocketserver==1.1.0
-athomeutils==0.0.6
 dotstar==0.2
 rpi-ws281x==4.0.0
-colorcycler>=0.0.9
+-e git+https://github.com/dhocker/athomesocketserver.git#egg=athomesocketserver
+-e git+https://github.com/dhocker/athomeutils.git#egg=athomeutils
+-e git+https://github.com/dhocker/colorcycler.git#egg=colorcycler
