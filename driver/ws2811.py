@@ -44,8 +44,23 @@ class WS2811(DriverBase):
         :param order: Required for interface compatibility. Not used.
         :return:
         """
-        self._strip = rpi_ws281x.Adafruit_NeoPixel(num_pixels, datapin, dma=10)
-        # print self._strip
+        # Select strip type
+        st = rpi_ws281x.WS2811_STRIP_RGB # default
+        order = order.lower()
+        # WS2811 string types
+        if order == "grb":
+            st = rpi_ws281x.WS2811_STRIP_GRB
+        elif order == "rbg":
+            st = rpi_ws281x.WS2811_STRIP_RBG
+        elif order == "gbr":
+            st = rpi_ws281x.WS2811_STRIP_GBR
+        elif order == "brg":
+            st = rpi_ws281x.WS2811_STRIP_BRG
+        elif order == "bgr":
+            st = rpi_ws281x.WS2811_STRIP_BGR
+        
+        self._strip = rpi_ws281x.Adafruit_NeoPixel(num_pixels, datapin, dma=10, strip_type=st)
+        # print(self._strip)
         self._numpixels = num_pixels
         self._datapin = datapin
         return self._begin()
