@@ -51,6 +51,7 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
             "randompixels": self.random_pixels,
             "brightness": self.brightness,
             "sinewave": self.sinewave,
+            "solidcolor": self.solidcolor_stmt,
         }
 
         # Add the algorithms to the valid statement dict
@@ -276,4 +277,23 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
             time.sleep(wait_ms)
         self._leddev.clear()
 
+        return self._stmt_index + 1
+
+    def solidcolor_stmt(self, stmt):
+        """
+        Run the solid color algorithm.
+        solidcolor r g b [wait]
+        """
+        # Wait time is optional
+        wait_ms = 1000.0
+        if len(stmt) >= 5:
+            wait_ms = stmt[4]
+
+        color = self._leddev.color(stmt[1], stmt[2], stmt[3])
+        for i in range(self._leddev.numPixels()):
+            self._leddev.setPixelColor(i, color)
+
+        self._leddev.show()
+        if not self._terminate_event.isSet():
+            time.sleep(wait_ms / 1000.0)
         return self._stmt_index + 1

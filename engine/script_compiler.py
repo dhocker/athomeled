@@ -58,6 +58,7 @@ class ScriptCompiler:
             "randompixels": self.randompixels_stmt,
             "brightness": self.brightness_stmt,
             "sinewave": self.sinewave_stmt,
+            "solidcolor": self.solidcolor_stmt,
         }
 
     @property
@@ -495,6 +496,19 @@ class ScriptCompiler:
             self.script_error("Not enough tokens")
             return None
         trans_tokens = self.resolve_algorithm_args(tokens, wait=50.0)
+        return trans_tokens
+
+    def solidcolor_stmt(self, tokens):
+        """
+        solidcolor r g b [wait=1000.0]
+        The wait value is how long the color is displayed.
+        :param tokens:
+        :return:
+        """
+        if len(tokens) < 2:
+            self.script_error("Not enough tokens")
+            return None
+        trans_tokens = self.resolve_algorithm_args(tokens, wait=1000.0)
         return trans_tokens
 
     def rainbow_stmt(self, tokens):
