@@ -319,7 +319,7 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
 
         current_color = from_color[:]
         for it in range(int(iterations + 1.0)):
-            logger.debug(current_color)
+            # logger.debug(current_color)
             color = self._leddev.color(current_color[0], current_color[1], current_color[2])
             for i in range(self._leddev.numPixels()):
                 self._leddev.setPixelColor(i, color)
