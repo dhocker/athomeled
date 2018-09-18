@@ -295,5 +295,7 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
 
         self._leddev.show()
         if not self._terminate_event.isSet():
+            # Sleep time is in seconds (can be a float)
+            # Wait time is in milliseconds.
             time.sleep(wait_ms / 1000.0)
         return self._stmt_index + 1

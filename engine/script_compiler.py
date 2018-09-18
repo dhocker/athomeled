@@ -192,6 +192,25 @@ class ScriptCompiler:
         else:
             return None
 
+    def resolve_color_arg(self, tokens, index):
+        """
+        Resolve an RGB color argument. The argument consists of either 1 or 3 tokens.
+        A single token is a defined color. Triad tokens form an RGB color.
+        color = [defined-color | R G B]
+        :param tokens: Command tokens
+        :param index: First token index for color
+        :return: tuple = (number_tokens_consumed, [r, g, b])
+        """
+        # Look for defined color first
+        if tokens[index] in self._vm.colors:
+            return (1, self._vm.colors[tokens[index]])
+
+        # Then, assume r, g, b color values. Each value can be a defined value or literal value.
+        r = self.resolve_define(int(tokens[index]))
+        g = self.resolve_define(int(tokens[index + 1]))
+        b = self.resolve_define(int(tokens[index + 2]))
+        return (3, [r, g, b])
+
     def resolve_algorithm_args(self, message_tokens, color=True, wait=None, iterations=None):
         """
         Resolve a statement that is subject to substitution by a color, wait and iterations
@@ -204,17 +223,12 @@ class ScriptCompiler:
         :return: Effective argument list
         """
         trans_tokens = [message_tokens[0]]
+        wait_index = 1 # Initially the first arg after the command
         if color:
-            if message_tokens[1] in self._vm.colors:
-                trans_tokens.extend(self._vm.colors[message_tokens[1]])
-                wait_index = 2
-            else:
-                trans_tokens.append(int(message_tokens[1]))
-                trans_tokens.append(int(message_tokens[2]))
-                trans_tokens.append(int(message_tokens[3]))
-                wait_index = 4
-        else:
-            wait_index = 1
+            r = self.resolve_color_arg(message_tokens, wait_index)
+            # r is a tuple (number-tokens-consumed, [r, g, b])
+            trans_tokens.extend(r[1])
+            wait_index += r[0]
 
         iterations_index = wait_index
         # Resolve wait
