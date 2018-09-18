@@ -59,6 +59,7 @@ class ScriptCompiler:
             "brightness": self.brightness_stmt,
             "sinewave": self.sinewave_stmt,
             "solidcolor": self.solidcolor_stmt,
+            "colorfade": self.colorfade_stmt,
         }
 
     @property
@@ -544,6 +545,44 @@ class ScriptCompiler:
             self.script_error("Not enough tokens")
             return None
         trans_tokens = self.resolve_algorithm_args(tokens, wait=1000.0)
+        return trans_tokens
+
+    def colorfade_stmt(self, tokens):
+        """
+        colorfade r g b r g b [wait=1000.0] [iterations=1000]
+        The wait value is how long the color is displayed.
+        :param tokens:
+        :return:
+        """
+        if len(tokens) < 3:
+            self.script_error("Not enough tokens")
+            return None
+
+        trans_tokens = [tokens[0]]
+        token_index = 1 # Initially the first arg after the command
+
+        # From color
+        r = self.resolve_color_arg(tokens, token_index)
+        # r is a tuple (number-tokens-consumed, [r, g, b])
+        trans_tokens.extend(r[1])
+        token_index += r[0]
+
+        # To color
+        r = self.resolve_color_arg(tokens, token_index)
+        # r is a tuple (number-tokens-consumed, [r, g, b])
+        trans_tokens.extend(r[1])
+        token_index += r[0]
+
+        # Resolve wait
+        r = self.resolve_wait_arg(tokens, token_index, default=1000.0)
+        trans_tokens.append(r[1])
+        token_index += r[0]
+
+        # Resolve iterations
+        r = self.resolve_wait_arg(tokens, token_index, default=1000)
+        trans_tokens.append(r[1])
+        token_index += r[0]
+
         return trans_tokens
 
     def rainbow_stmt(self, tokens):
