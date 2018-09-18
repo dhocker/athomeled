@@ -206,10 +206,38 @@ class ScriptCompiler:
             return (1, self._vm.colors[tokens[index]])
 
         # Then, assume r, g, b color values. Each value can be a defined value or literal value.
-        r = self.resolve_define(int(tokens[index]))
-        g = self.resolve_define(int(tokens[index + 1]))
-        b = self.resolve_define(int(tokens[index + 2]))
+        r = int(self.resolve_define(tokens[index]))
+        g = int(self.resolve_define(tokens[index + 1]))
+        b = int(self.resolve_define(tokens[index + 2]))
         return (3, [r, g, b])
+
+    def resolve_wait_arg(self, tokens, index, default=None):
+        """
+        Resolve a wait time argument.
+        :param tokens: Command tokens
+        :param index: Token index of wait time argument
+        :param default: Default wait time if there is no wait argument
+        :return:
+        """
+        if len(tokens) > index:
+            # Resolve wait time
+            return 1, self.resolve_define(tokens[index])
+        # Apply default
+        return 0, self.resolve_define(default)
+
+    def resolve_iterations_arg(self, tokens, index, default=1):
+        """
+        Resolve a iterations argument.
+        :param tokens: Command tokens
+        :param index: Token index of iterations argument
+        :param default: Default iterations if there is no iterations argument
+        :return:
+        """
+        if len(tokens) > index:
+            # Resolve iterations
+            return 1, self.resolve_define(tokens[index])
+        # Apply default
+        return 0, self.resolve_define(default)
 
     def resolve_algorithm_args(self, message_tokens, color=True, wait=None, iterations=None):
         """
@@ -233,22 +261,15 @@ class ScriptCompiler:
         iterations_index = wait_index
         # Resolve wait
         if wait:
-            if (len(message_tokens) > wait_index):
-                # Resolve wait time
-                trans_tokens.append(self.resolve_define(message_tokens[wait_index]))
-                iterations_index += 1
-            else:
-                # Apply default
-                trans_tokens.append(self.resolve_define(wait))
+            r = self.resolve_wait_arg(message_tokens, wait_index, default=wait)
+            trans_tokens.append(r[1])
+            iterations_index += r[0]
 
         # Resolve iterations
         if iterations:
-            if (len(message_tokens) > (iterations_index)):
-                trans_tokens.append(self.resolve_define(message_tokens[iterations_index]))
-                iterations_index += 1
-            else:
-                # Apply default
-                trans_tokens.append(self.resolve_define(iterations))
+            r = self.resolve_wait_arg(message_tokens, iterations_index, default=iterations)
+            trans_tokens.append(r[1])
+            iterations_index += r[0]
 
         # Handle remaining tokens, if any
         while (len(message_tokens) > (iterations_index)):
