@@ -345,6 +345,22 @@ how fast the chase proceeds.
     
 ### Original Algorithms
 These algorithms were written by the author.
+#### SolidColor
+Fills all pixels with a specified single color.
+
+    solidcolor { r g b | color} [wait=1000.0]
+
+The wait time (in millisedonds) is how long the color is displayed.
+
+#### ColorFade
+Morphs all pixels from one color to another color over a given period of time.
+
+    colorfade { r g b | color} { r g b | color} [wait=1000.0] [iterations=1000]
+
+The first color is the "from" color and the second color is the "to" color. 
+The wait time is how long to pause between iterations.
+The iterations are how many steps to use to complete the fade.
+
 #### SineWave
 Generates sequential colors using a sine wave based algorithm. See the
 article
