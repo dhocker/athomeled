@@ -55,6 +55,7 @@ class ScriptCPUBase:
             "import": None,
             "main": self.main_stmt,
             "main-end": self.main_end_stmt,
+            "logmessage": self.logmessage_stmt,
             "do-for": self.do_for_stmt,
             "do-for-end": self.do_for_end_stmt,
             "do-at": self.do_at_stmt,
@@ -117,6 +118,27 @@ class ScriptCPUBase:
         """
         self._leddev.clear()
         logger.info("All LEDs reset")
+
+    def logmessage_stmt(self, stmt):
+        """
+        Write a message to the log file
+        :param stmt:
+        :return:
+        """
+        tokens = stmt[1].split()
+        msg = stmt[1]
+        # Do substitution of $vars (anything that starts with $)
+        for t in tokens:
+            if t[0] == '$':
+                sub_value = t
+                symbol = t[1:]
+                if symbol in self._vm.colors:
+                    sub_value = str(self._vm.colors[symbol])
+                elif symbol in self._vm.defines:
+                    sub_value = str(self._vm.defines[symbol])
+                msg = msg.replace(t, sub_value)
+        logger.info(msg)
+        return self._stmt_index + 1
 
     def main_stmt(self, stmt):
         """

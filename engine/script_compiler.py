@@ -38,6 +38,7 @@ class ScriptCompiler:
         self._valid_stmts = {
             "define": self.define_stmt,
             "import": self.import_stmt,
+            "logmessage": self.logmessage_stmt,
             "do-for": self.do_for_stmt,
             "do-for-end": self.do_for_end_stmt,
             "do-at": self.do_at_stmt,
@@ -295,6 +296,16 @@ class ScriptCompiler:
             self._last_error.append(error_at)
         logger.error(message)
         self._last_error.append(message)
+
+    def logmessage_stmt(self, tokens):
+        """
+        logmessage message...
+        :param tokens: Ignored
+        :return: Two token list consisting of command and message string
+        """
+        stmt_tokens = self._stmt.split(maxsplit=1)
+        stmt_tokens[1] = stmt_tokens[1].rstrip()
+        return stmt_tokens
 
     def value_stmt(self, tokens):
         """
