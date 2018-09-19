@@ -353,19 +353,21 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
 
         which_color = True
         for it in range(int(iterations)):
-            if it % 2 == 0:
-                if which_color:
-                    current_color = self._leddev.color(color1[0], color1[1], color1[2])
+            for px in range(self._leddev.numPixels()):
+                if px % 2 == 0:
+                    if which_color:
+                        current_color = self._leddev.color(color1[0], color1[1], color1[2])
+                    else:
+                        current_color = self._leddev.color(color2[0], color2[1], color2[2])
                 else:
-                    current_color = self._leddev.color(color2[0], color2[1], color2[2])
-            else:
-                if which_color:
-                    current_color = self._leddev.color(color2[0], color2[1], color2[2])
-                else:
-                    current_color = self._leddev.color(color1[0], color1[1], color1[2])
+                    if which_color:
+                        current_color = self._leddev.color(color2[0], color2[1], color2[2])
+                    else:
+                        current_color = self._leddev.color(color1[0], color1[1], color1[2])
 
-            self._leddev.setPixelColor(it, current_color)
+                self._leddev.setPixelColor(px, current_color)
 
+            # Show all pixels
             self._leddev.show()
 
             if not self._terminate_event.isSet():
