@@ -53,6 +53,7 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
             "sinewave": self.sinewave,
             "solidcolor": self.solidcolor_stmt,
             "colorfade": self.colorfade_stmt,
+            "twocolor": self.twocolor_stmt,
         }
 
         # Add the algorithms to the valid statement dict
@@ -336,5 +337,44 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
             # Generate next color
             for i in range(3):
                 current_color[i] = round(float(from_color[i]) + (delta_rgb[i] * float(it)))
+
+        return self._stmt_index + 1
+
+    def twocolor_stmt(self, stmt):
+        """
+        Run the two color algorithm.
+        twocolor r g b r g b wait iterations
+        """
+        # Arguments
+        color1 = [stmt[1], stmt[2], stmt[3]]
+        color2 = [stmt[4], stmt[5], stmt[6]]
+        wait_ms = stmt[7]
+        iterations = stmt[8]
+
+        which_color = True
+        for it in range(int(iterations)):
+            if it % 2 == 0:
+                if which_color:
+                    current_color = self._leddev.color(color1[0], color1[1], color1[2])
+                else:
+                    current_color = self._leddev.color(color2[0], color2[1], color2[2])
+            else:
+                if which_color:
+                    current_color = self._leddev.color(color2[0], color2[1], color2[2])
+                else:
+                    current_color = self._leddev.color(color1[0], color1[1], color1[2])
+
+            self._leddev.setPixelColor(it, current_color)
+
+            self._leddev.show()
+
+            if not self._terminate_event.isSet():
+                # Sleep time is in seconds (can be a float)
+                # Wait time is in milliseconds.
+                time.sleep(wait_ms / 1000.0)
+            else:
+                break
+
+            which_color = not which_color
 
         return self._stmt_index + 1

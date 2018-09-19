@@ -61,6 +61,7 @@ class ScriptCompiler:
             "sinewave": self.sinewave_stmt,
             "solidcolor": self.solidcolor_stmt,
             "colorfade": self.colorfade_stmt,
+            "twocolor": self.twocolor_stmt,
         }
 
     @property
@@ -704,3 +705,41 @@ class ScriptCompiler:
             self.script_error("Invalid brightness value")
             return None
         return tokens
+
+    def twocolor_stmt(self, tokens):
+        """
+        duocolor r g b r g b [wait=500.0] [iterations=100]
+        The wait value is the time between iterations
+        :param tokens:
+        :return:
+        """
+        if len(tokens) < 3:
+            self.script_error("Not enough tokens")
+            return None
+
+        trans_tokens = [tokens[0]]
+        token_index = 1 # Initially the first arg after the command
+
+        # color 1
+        r = self.resolve_color_arg(tokens, token_index)
+        # r is a tuple (number-tokens-consumed, [r, g, b])
+        trans_tokens.extend(r[1])
+        token_index += r[0]
+
+        # color 2
+        r = self.resolve_color_arg(tokens, token_index)
+        # r is a tuple (number-tokens-consumed, [r, g, b])
+        trans_tokens.extend(r[1])
+        token_index += r[0]
+
+        # Resolve wait
+        r = self.resolve_wait_arg(tokens, token_index, default=500.0)
+        trans_tokens.append(r[1])
+        token_index += r[0]
+
+        # Resolve iterations
+        r = self.resolve_wait_arg(tokens, token_index, default=100)
+        trans_tokens.append(r[1])
+        token_index += r[0]
+
+        return trans_tokens
