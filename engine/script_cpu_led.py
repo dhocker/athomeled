@@ -136,7 +136,7 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
             for q in range(3):
                 for i in range(0, self._leddev.numPixels(), 3):
                     self._leddev.setPixelColor(i + q, color)
-                    self._leddev.show()
+                self._leddev.show()
                 time.sleep(wait_ms/1000.0)
                 for i in range(0, self._leddev.numPixels(), 3):
                     self._leddev.setPixelColor(i + q, 0)
