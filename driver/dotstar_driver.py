@@ -13,7 +13,7 @@
 # repo can be found at https://github.com/adafruit/Adafruit_DotStar_Pi. A fork
 # of the original repo is at https://github.com/dhocker/Adafruit_DotStar_Pi
 from dotstar import Adafruit_DotStar
-from driver_base import DriverBase
+from .driver_base import DriverBase
 
 #
 # LED interface driver for APA102 controlled strips and strings
@@ -42,7 +42,7 @@ class DotStar(DriverBase):
         :param order: The order of colors as expected by the strip/string.
         :return:
         """
-        self._strip = Adafruit_DotStar(num_pixels, order=order)
+        self._strip = Adafruit_DotStar(num_pixels, order=order.encode('utf-8'))
         # print self._strip
         self._numpixels = num_pixels
         return self._begin()
