@@ -29,7 +29,8 @@ class ScriptCompiler:
         self._file_depth = 0
         self._line_number = [0]
         self._file_path = [""]
-        self._do_for = False
+        # Index of last encountered do-for statement -1 to n
+        self._do_for = -1
         self._do_at = False
         self._do_until = False
         self._do_forever = False
@@ -102,6 +103,8 @@ class ScriptCompiler:
             stmt = sf.readline()
 
         # TODO Validate that all script blocks are closed
+        if self._do_for >= 0:
+            logger.debug("%d do-for statement(s) open at script end", self._do_for + 1)
 
         sf.close()
 
@@ -376,9 +379,6 @@ class ScriptCompiler:
         if len(tokens) < 2:
             self.script_error("Missing statement argument")
             return None
-        if self._do_for:
-            self.script_error("Only one Do-for statement can be active")
-            return None
 
         # Translate/validate duration
         try:
@@ -388,7 +388,7 @@ class ScriptCompiler:
             return None
 
         tokens[1] = duration_struct
-        self._do_for = True
+        self._do_for += 1
         return tokens
 
     def do_for_end_stmt(self, tokens):
@@ -397,9 +397,10 @@ class ScriptCompiler:
         :param tokens:
         :return:
         """
-        if not self._do_for:
+        if self._do_for < 0:
             self.script_error("No matching Do-For is open")
             return None
+        self._do_for -= 1
         return tokens
 
     def do_at_stmt(self, tokens):

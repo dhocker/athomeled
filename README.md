@@ -253,7 +253,7 @@ set of statements between the Do-For statement and its corresponding Do-For-End 
     
 The argument is a duration in hours, minutes and seconds.
 
-Currently, Do-For statements cannot be nested.
+Do-For statements **may be nested**.
 
 ### Do-For-End
 The Do-For-End statement is the foot of the Do-For loop. When execution reaches the Do-For-End statement,

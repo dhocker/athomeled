@@ -34,10 +34,10 @@ class ScriptCPUBase:
         # This is the equivalent of the next instruction address
         self._stmt_index = 0
         # Do-For control
-        self._do_for_active = False
-        self._do_for_elapsed_time = None
-        self._do_for_start_time = None
-        self._do_for_stmt = -1
+        self._do_for_active = -1
+        self._do_for_elapsed_time = []
+        self._do_for_start_time = []
+        self._do_for_stmt = []
         # Do-At control
         self._do_at_active = False
         self._do_at_stmt = -1
@@ -106,6 +106,11 @@ class ScriptCPUBase:
             # This sets the next statement
             self._stmt_index = next_index
 
+        # End of script error checks iff end of script reached
+        if not self._terminate_event.isSet():
+            if self._do_for_active >= 0:
+                logger.error("%d unterminated do-for statements", self._do_for_active + 1)
+
         logger.info("Virtual CPU stopped")
         self._reset()
         return next_index > 0
@@ -164,19 +169,15 @@ class ScriptCPUBase:
         :return:
         """
 
-        # If we are under Do-For control, ignore. Should be prevented at compile phase.
-        if self._do_for_active:
-            return self._stmt_index + 1
-
-        self._do_for_active = True
-        self._do_for_stmt = self._stmt_index
+        self._do_for_stmt.append(self._stmt_index)
 
         # Determine the end time
         # Use the start time and a timedelta that allows second accuracy
         now = datetime.datetime.now()
-        self._do_for_elapsed_time = datetime.timedelta(seconds=(stmt[1].hour * 60 * 60) + (stmt[1].minute * 60) + stmt[1].second)
-        self._do_for_start_time = now
-        logger.info("Do-For %s", str(self._do_for_elapsed_time))
+        self._do_for_elapsed_time.append(datetime.timedelta(seconds=(stmt[1].hour * 60 * 60) + (stmt[1].minute * 60) + stmt[1].second))
+        self._do_for_start_time.append(now)
+        self._do_for_active += 1
+        logger.info("Do-For %s", str(self._do_for_elapsed_time[self._do_for_active]))
 
         return self._stmt_index + 1
 
@@ -185,20 +186,23 @@ class ScriptCPUBase:
         Foot of Do-For loop. Repeat script block until time expires.
         :return:
         """
-        if self._do_for_active:
+        if self._do_for_active >= 0:
             # A Do-For statement is active.
             # When the duration expires...
             now = datetime.datetime.now()
-            elapsed = now - self._do_for_start_time
+            elapsed = now - self._do_for_start_time[self._do_for_active]
             # TODO Include seconds in duration
-            if elapsed >= self._do_for_elapsed_time:
+            if elapsed >= self._do_for_elapsed_time[self._do_for_active]:
                 # Stop running the script block and set the stmt index to the next statement
                 logger.info("Do-For loop ended at %s", str(now))
-                self._do_for_active = False
+                self._do_for_active -= 1
+                self._do_for_stmt.pop()
+                self._do_for_elapsed_time.pop()
+                self._do_for_start_time.pop()
                 next_stmt = self._stmt_index + 1
             else:
                 # Loop back to top of script block
-                next_stmt = self._do_for_stmt + 1
+                next_stmt = self._do_for_stmt[self._do_for_active] + 1
         else:
             next_stmt = self._stmt_index + 1
 
