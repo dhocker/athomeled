@@ -243,6 +243,25 @@ execution returns to the corresponding Do-At statement.
 
     do-at-end
 
+### Do-For-N
+The Do-For-N statement executes a script block a given number of times. The script block is the
+set of statements between the Do-For-N statement and its corresponding Do-For-N-End statement.
+This is the equivalent of the common programming statement "for i in range(N)" or 
+"for i = 0 to N".
+    
+    do-for-n 24
+        # script block statements
+    do-for-n-end
+    
+The argument is the number of times the loop is to execute (24 in the above example).
+
+Do-For-N statements **may be nested**.
+
+### Do-For-N-End
+The Do-For-N-End statement is the foot of the Do-For-N loop.
+
+    do-for-n-end
+
 ### Do-For
 The Do-For statement executes a script block for a given period of time. The script block is the
 set of statements between the Do-For statement and its corresponding Do-For-End statement.

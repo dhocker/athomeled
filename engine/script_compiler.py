@@ -29,6 +29,8 @@ class ScriptCompiler:
         self._file_depth = 0
         self._line_number = [0]
         self._file_path = [""]
+        # Index of last encountered do-for-n statement -1 to n
+        self._do_for_n = -1
         # Index of last encountered do-for statement -1 to n
         self._do_for = -1
         self._do_at = False
@@ -40,6 +42,8 @@ class ScriptCompiler:
             "define": self.define_stmt,
             "import": self.import_stmt,
             "logmessage": self.logmessage_stmt,
+            "do-for-n": self.do_for_n_stmt,
+            "do-for-n-end": self.do_for_n_end_stmt,
             "do-for": self.do_for_stmt,
             "do-for-end": self.do_for_end_stmt,
             "do-at": self.do_at_stmt,
@@ -368,6 +372,39 @@ class ScriptCompiler:
         self._file_path.pop()
 
         # The cpu will ignore this statement
+        return tokens
+
+    def do_for_n_stmt(self, tokens):
+        """
+        Execute a script block n times
+        :param tokens:
+        :return:
+        """
+        if len(tokens) < 2:
+            self.script_error("Missing statement argument")
+            return None
+
+        # Translate/validate iterations
+        try:
+            iterations = int(tokens[1])
+        except Exception as ex:
+            self.script_error("Invalid iterations")
+            return None
+
+        tokens[1] = iterations
+        self._do_for_n += 1
+        return tokens
+
+    def do_for_n_end_stmt(self, tokens):
+        """
+        Marks the end/foot of a block of code headed by a Do-For-N statement.
+        :param tokens:
+        :return:
+        """
+        if self._do_for_n < 0:
+            self.script_error("No matching Do-For-N is open")
+            return None
+        self._do_for_n -= 1
         return tokens
 
     def do_for_stmt(self, tokens):

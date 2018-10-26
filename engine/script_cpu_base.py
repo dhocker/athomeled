@@ -33,6 +33,10 @@ class ScriptCPUBase:
         self._terminate_event = terminate_event
         # This is the equivalent of the next instruction address
         self._stmt_index = 0
+        # Do-For-N control
+        self._do_for_n_active = -1
+        self._do_for_n_count = []
+        self._do_for_n_stmt = []
         # Do-For control
         self._do_for_active = -1
         self._do_for_elapsed_time = []
@@ -56,6 +60,8 @@ class ScriptCPUBase:
             "main": self.main_stmt,
             "main-end": self.main_end_stmt,
             "logmessage": self.logmessage_stmt,
+            "do-for-n": self.do_for_n_stmt,
+            "do-for-n-end": self.do_for_n_end_stmt,
             "do-for": self.do_for_stmt,
             "do-for-end": self.do_for_end_stmt,
             "do-at": self.do_at_stmt,
@@ -161,6 +167,43 @@ class ScriptCPUBase:
         """
         # This is the loop point for the main loop
         return self._vm.main_index
+
+    def do_for_n_stmt(self, stmt):
+        """
+        Execute a script block for a given number of iterations.
+        :param stmt: stmt[1] is the number of iterations.
+        :return:
+        """
+
+        self._do_for_n_stmt.append(self._stmt_index)
+        self._do_for_n_count.append(stmt[1])
+        self._do_for_n_active += 1
+
+        return self._stmt_index + 1
+
+    def do_for_n_end_stmt(self, stmt):
+        """
+        Foot of Do-For-N loop. Repeat script block until count expires.
+        :return:
+        """
+        if self._do_for_n_active >= 0:
+            # A Do-For-N statement is active.
+            # When the count expires...
+            self._do_for_n_count[self._do_for_n_active] -= 1
+            if self._do_for_n_count[self._do_for_n_active] <= 0:
+                # Stop running the script block and set the stmt index to the next statement
+                logger.info("Do-For-N loop ended")
+                self._do_for_n_active -= 1
+                self._do_for_n_stmt.pop()
+                self._do_for_n_count.pop()
+                next_stmt = self._stmt_index + 1
+            else:
+                # Loop back to top of script block
+                next_stmt = self._do_for_n_stmt[self._do_for_n_active] + 1
+        else:
+            next_stmt = self._stmt_index + 1
+
+        return next_stmt
 
     def do_for_stmt(self, stmt):
         """
