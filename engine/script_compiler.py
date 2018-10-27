@@ -386,7 +386,7 @@ class ScriptCompiler:
 
         # Translate/validate iterations
         try:
-            iterations = int(tokens[1])
+            iterations = int(self.resolve_define(tokens[1]))
         except Exception as ex:
             self.script_error("Invalid iterations")
             return None
