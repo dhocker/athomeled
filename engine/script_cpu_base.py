@@ -98,7 +98,7 @@ class ScriptCPUBase:
                 # Since the compile phase fails bad statements, the
                 # only reason to be here is for a statement that
                 # has not yet been implemented.
-                logger.debug("%s statement is not implemented", stmt[0])
+                logger.error("%s statement is not implemented", stmt[0])
                 next_index = self._stmt_index + 1
 
             # End of program check
@@ -173,7 +173,7 @@ class ScriptCPUBase:
             self._do_for_n_count[self._do_for_n_active] -= 1
             if self._do_for_n_count[self._do_for_n_active] <= 0:
                 # Stop running the script block and set the stmt index to the next statement
-                logger.info("Do-For-N loop ended")
+                logger.debug("Do-For-N loop ended")
                 self._do_for_n_active -= 1
                 self._do_for_n_stmt.pop()
                 self._do_for_n_count.pop()
@@ -201,7 +201,7 @@ class ScriptCPUBase:
         self._do_for_elapsed_time.append(datetime.timedelta(seconds=(stmt[1].hour * 60 * 60) + (stmt[1].minute * 60) + stmt[1].second))
         self._do_for_start_time.append(now)
         self._do_for_active += 1
-        logger.info("Do-For %s", str(self._do_for_elapsed_time[self._do_for_active]))
+        logger.debug("Do-For %s", str(self._do_for_elapsed_time[self._do_for_active]))
 
         return self._stmt_index + 1
 
@@ -218,7 +218,7 @@ class ScriptCPUBase:
             # TODO Include seconds in duration
             if elapsed >= self._do_for_elapsed_time[self._do_for_active]:
                 # Stop running the script block and set the stmt index to the next statement
-                logger.info("Do-For loop ended at %s", str(now))
+                logger.debug("Do-For loop ended at %s", str(now))
                 self._do_for_active -= 1
                 self._do_for_stmt.pop()
                 self._do_for_elapsed_time.pop()
@@ -265,7 +265,7 @@ class ScriptCPUBase:
             # The deltatime will be negative until we cross the Do-At time
             dt = now - run_start_time
             if (dt.days == 0) and (dt.seconds >= 0):
-                logger.info("Do-At begins at %s", str(now))
+                logger.debug("Do-At begins at %s", str(now))
 
                 # On to the next sequential statement
                 break
@@ -280,7 +280,7 @@ class ScriptCPUBase:
         :return:
         """
         if not self._do_at_active:
-            logger.info("No matching Do-At statement")
+            logger.error("No matching Do-At statement")
             return -1
 
         # Reset state. Turn off all LED channels.
@@ -314,7 +314,7 @@ class ScriptCPUBase:
         self._do_until_active = True
         self._do_until_stmt = self._stmt_index
 
-        logger.info("Running until %s...", str(self._run_until_time))
+        logger.debug("Running until %s...", str(self._run_until_time))
 
         # Execution continues at the next statement after the Do-Until
         return self._stmt_index + 1
@@ -326,7 +326,7 @@ class ScriptCPUBase:
         :return:
         """
         if not self._do_until_active:
-            logger.info("No matching Do-Until statement")
+            logger.error("No matching Do-Until statement")
             return -1
 
         # Terminate break out
@@ -336,7 +336,7 @@ class ScriptCPUBase:
         # Check for until time to arrive. Break out when it does.
         now = datetime.datetime.now()
         if now >= self._run_until_time:
-            logger.info("Do-Until occurs at %s", str(now))
+            logger.debug("Do-Until occurs at %s", str(now))
             # On to the next sequential statement
             return self._stmt_index + 1
 
@@ -382,10 +382,10 @@ class ScriptCPUBase:
         now = datetime.datetime.now()
         pause_time = datetime.timedelta(
             seconds=(stmt[1].hour * 60 * 60) + (stmt[1].minute * 60) + stmt[1].second)
-        logger.info("Pausing for %s", str(pause_time))
+        logger.debug("Pausing for %s", str(pause_time))
 
         end_time = datetime.datetime.now() + pause_time
-        logger.info("Pause ends at %s", str(end_time))
+        logger.debug("Pause ends at %s", str(end_time))
 
         # Wait for end of pause time to arrive. Break out on termination signal.
         now = datetime.datetime.now()
