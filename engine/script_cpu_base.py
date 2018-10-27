@@ -57,8 +57,6 @@ class ScriptCPUBase:
             "color": None,
             "value": None,
             "import": None,
-            "main": self.main_stmt,
-            "main-end": self.main_end_stmt,
             "logmessage": self.logmessage_stmt,
             "do-for-n": self.do_for_n_stmt,
             "do-for-n-end": self.do_for_n_end_stmt,
@@ -150,23 +148,6 @@ class ScriptCPUBase:
                 msg = msg.replace(t, sub_value)
         logger.info(msg)
         return self._stmt_index + 1
-
-    def main_stmt(self, stmt):
-        """
-        Set the main loop point
-        :param stmt:
-        :return:
-        """
-        return self._stmt_index + 1
-
-    def main_end_stmt(self, stmt):
-        """
-        Change the next statement index to the main loop point
-        :param stmt:
-        :return:
-        """
-        # This is the loop point for the main loop
-        return self._vm.main_index
 
     def do_for_n_stmt(self, stmt):
         """
