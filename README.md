@@ -364,12 +364,24 @@ how fast the chase proceeds.
     
 ### Original Algorithms
 These algorithms were written by the author.
+
 #### SolidColor
 Fills all pixels with a specified single color.
 
     solidcolor { r g b | color} [wait=1000.0]
 
 The wait time (in millisedonds) is how long the color is displayed.
+
+#### TwoColor
+Alternates pixels between two colors. Assume two colors c1 and c2 and a string of LEDs
+with 4 pixels. On the first pass, the pixels will be c1 c2 c1 c2. On the sceond pass,
+the pixels will be c2 c1 c2 c1. Even pixels will alternate from c1 to c2 while odd
+pixels will alternate from c2 to c1.
+
+    twocolor { r g b | color} { r g b | color} [wait=500.0] [iterations=100]
+
+The wait time (in milliseconds) is how long to pause between iterations.
+The iterations are how many times to repeat.
 
 #### ColorFade
 Morphs all pixels from one color to another color over a given period of time.
