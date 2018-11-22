@@ -103,6 +103,7 @@ def main():
     logger.info("Starting up...")
 
     logger.info("Using configuration file: %s", configuration.Configuration.GetConfigurationFilePath())
+    configuration.Configuration.dump_configuration()
 
     # Set up handler for the kill signal
     signal.signal(signal.SIGTERM, term_handler)  # Activate the server; this will keep running until you

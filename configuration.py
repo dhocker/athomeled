@@ -81,6 +81,11 @@ class Configuration():
         # print str(Configuration.ActiveConfig)
         return
 
+    @classmethod
+    def dump_configuration(cls):
+        logger.info("Active configuration file")
+        logger.info(json.dumps(cls.ActiveConfig, indent=4))
+
     ######################################################################
     @classmethod
     def IsLinux(cls):
