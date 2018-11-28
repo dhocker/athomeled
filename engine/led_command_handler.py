@@ -132,6 +132,7 @@ class LEDCommandHandler:
         :param raw_command: The command line sent by the client.
         :return:
         """
+        logger.debug("Control command: %s", raw_command)
         tokens = raw_command.lower().split()
         if (len(tokens) >= 1) and (tokens[0] in self._valid_commands):
             if self._valid_commands[tokens[0]]:
@@ -147,6 +148,7 @@ class LEDCommandHandler:
 
         # Return the command generated response with the end of response
         # delimiter tacked on.
+        logger.debug("Control command response: %s", str(response))
         return response
 
     def get_configuration(self, tokens, command):
