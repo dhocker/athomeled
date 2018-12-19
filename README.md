@@ -96,6 +96,7 @@ file is to copy at_home_led.example.conf to at_home_led.conf and edit as require
 | Port | The TCP port to be used for remote control. The default is 5000. |
 | Timeout | How long a remote control connection is held open when there is no activity. |
 | AutoRun | Script file to be started when AtHomeDMX starts. The default is none. |
+| WaitForClockSync | In seconds, the amount of up time required to assure time-of-day clock sync. The default is 30. |
 
 ## Device Driver Configuration
 ### WS2811/NeoPixels

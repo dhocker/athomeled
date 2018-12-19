@@ -200,6 +200,11 @@ class Configuration():
 
     ######################################################################
     @classmethod
+    def WaitForClockSync(cls):
+        return int(cls.get_config_var("WaitForClockSync", default_value=30))
+
+    ######################################################################
+    @classmethod
     def GetConfigurationFilePath(cls):
         """
         Returns the full path to the configuration file

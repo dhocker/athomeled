@@ -105,6 +105,19 @@ def main():
     logger.info("Using configuration file: %s", configuration.Configuration.GetConfigurationFilePath())
     configuration.Configuration.dump_configuration()
 
+    # Wait for clock to sync. This is mostly for Raspberry Pis which do not have a hardware RTC.
+    if configuration.Configuration.WaitForClockSync() > 0:
+        import psutil, datetime
+        boot_time = datetime.datetime.fromtimestamp(psutil.boot_time())
+        up_time = datetime.datetime.now() - boot_time
+        if up_time.seconds < configuration.Configuration.WaitForClockSync():
+            logger.debug("Waiting for clock to sync")
+            while up_time.seconds < configuration.Configuration.WaitForClockSync():
+                time.sleep(1)
+                up_time = datetime.datetime.now() - boot_time
+        else:
+            logger.debug("Clock sync was not required")
+
     # Set up handler for the kill signal
     signal.signal(signal.SIGTERM, term_handler)  # Activate the server; this will keep running until you
     # interrupt the program with Ctrl-C or kill the daemon.
