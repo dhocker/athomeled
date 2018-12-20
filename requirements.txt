@@ -2,3 +2,4 @@ rpi-ws281x==4.0.0
 -e git+https://github.com/dhocker/athomesocketserver.git#egg=athomesocketserver
 -e git+https://github.com/dhocker/athomeutils.git#egg=athomeutils
 -e git+https://github.com/dhocker/colorcycler.git#egg=colorcycler
+psutil==5.4.8
