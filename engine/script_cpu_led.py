@@ -398,7 +398,9 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
 
         for it in range(int(iterations)):
             for px in range(self._leddev.numPixels()):
-                self._leddev.setPixelColor(px, pixel_gen.pixel(px))
+                # Change color format from (r,g,b) to 0xrrggbb
+                c = Color77PixelGenerator.color(pixel_gen.pixel(px))
+                self._leddev.setPixelColor(px, c)
             self._leddev.show()
 
             if not self._terminate_event.isSet():

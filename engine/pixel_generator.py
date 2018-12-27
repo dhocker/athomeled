@@ -40,3 +40,12 @@ class PixelGenerator:
 
     def stop(self):
         pass
+
+    @staticmethod
+    def color(rgb):
+        """
+        Create a composite integer RGB color value
+        :param rgb: 3-tuple (r,g,b)
+        :return: Integer color 0xrrggbb
+        """
+        return (rgb[0] << 16) | (rgb[1] << 8) | rgb[2]
