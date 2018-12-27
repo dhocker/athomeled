@@ -427,6 +427,32 @@ range of RGB values.
 Since the maximum RGB component value is 255, the value of
 width + center must be less than or equal to 255.
 
+#### Color77
+Implements a 7 x 7 algorithm using 7 colors across groups of 7 pixels.
+For the set of colors abcdefg, the sequence looks like this.
+
+    iiiiiii...iiiiiii
+    aiiiiii...aiiiiii
+    aaiiiii...aaiiiii
+    ...
+    aaaaaaa...aaaaaaa
+    baaaaaa...baaaaaa
+    bbaaaaa...bbaaaaa
+    ...
+    bbbbbbb...bbbbbbb
+    ...
+    ggggggg...ggggggg
+
+The command is:
+
+    color77 [wait=200.0] [iterations=100]
+
+The wait time controls how fast the algorithm runs and the iterations
+determines how long the command runs.
+
+Currently, the set of 7 colors is fixed. However, in the future there will be
+some way to set the colors.
+
 #### Scrollpixels
 Starting from the first pixel, scrolls a group of 5 pixels across the strip. 
 The wait (time in milliseconds) value determines
@@ -434,7 +460,7 @@ how fast the animation proceeds. The iterations value determines
 how many times the algorithm is executed.
 
     scrollpixels {r g b | color} [wait=20.0] [iterations=1000]
-    
+
 #### Randompixels
 Sets a randomly chosen pixel to a randomly generated color.
 Up to half of the pixels on the strip can be lighted at any time.

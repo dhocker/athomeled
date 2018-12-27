@@ -67,6 +67,7 @@ class ScriptCompiler:
             "solidcolor": self.solidcolor_stmt,
             "colorfade": self.colorfade_stmt,
             "twocolor": self.twocolor_stmt,
+            "color77": self.color77_stmt,
         }
 
     @property
@@ -746,7 +747,7 @@ class ScriptCompiler:
 
     def twocolor_stmt(self, tokens):
         """
-        duocolor r g b r g b [wait=500.0] [iterations=100]
+        twocolor r g b r g b [wait=500.0] [iterations=100]
         The wait value is the time between iterations
         :param tokens:
         :return:
@@ -772,6 +773,27 @@ class ScriptCompiler:
 
         # Resolve wait
         r = self.resolve_wait_arg(tokens, token_index, default=500.0)
+        trans_tokens.append(r[1])
+        token_index += r[0]
+
+        # Resolve iterations
+        r = self.resolve_wait_arg(tokens, token_index, default=100)
+        trans_tokens.append(r[1])
+        token_index += r[0]
+
+        return trans_tokens
+
+    def color77_stmt(self, tokens):
+        """
+        color77 [wait=200.0] [iterations=100]
+        :param tokens:
+        :return:
+        """
+        trans_tokens = [tokens[0]]
+        token_index = 1 # Initially the first arg after the command
+
+        # Resolve wait
+        r = self.resolve_wait_arg(tokens, token_index, default=200.0)
         trans_tokens.append(r[1])
         token_index += r[0]
 

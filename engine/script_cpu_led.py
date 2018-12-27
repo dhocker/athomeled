@@ -22,6 +22,7 @@
 
 from . import script_cpu_base
 from colorcyclers.sine_color_cycler import SineColorCycler
+from .color77_generator import Color77PixelGenerator
 import time
 import random
 from collections import deque
@@ -54,6 +55,7 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
             "solidcolor": self.solidcolor_stmt,
             "colorfade": self.colorfade_stmt,
             "twocolor": self.twocolor_stmt,
+            "color77": self.color77_stmt,
         }
 
         # Add the algorithms to the valid statement dict
@@ -379,5 +381,35 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
                 break
 
             which_color = not which_color
+
+        return self._stmt_index + 1
+
+    def color77_stmt(self, stmt):
+        """
+        color77 wait iterations
+        :param stmt:
+        :return:
+        """
+        pixel_gen = Color77PixelGenerator(num_pixels=self._leddev.numPixels())
+        wait_ms = stmt[1]
+        iterations = stmt[2]
+
+        pixel_gen.start()
+
+        for it in range(int(iterations)):
+            for px in range(self._leddev.numPixels()):
+                self._leddev.setPixelColor(px, pixel_gen.pixel(px))
+            self._leddev.show()
+
+            if not self._terminate_event.isSet():
+                # Sleep time is in seconds (can be a float)
+                # Wait time is in milliseconds.
+                time.sleep(wait_ms / 1000.0)
+            else:
+                break
+
+            pixel_gen.step()
+
+        pixel_gen.stop()
 
         return self._stmt_index + 1
