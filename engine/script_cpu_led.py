@@ -137,11 +137,11 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
             if self._terminate_event.isSet():
                 break
             for q in range(span):
-                for i in range(0, self._leddev.numPixels(), span):
+                for i in range(0, self._leddev.numPixels() - span + 1, span):
                     self._leddev.setPixelColor(i + q, color)
                 self._leddev.show()
                 time.sleep(wait_ms/1000.0)
-                for i in range(0, self._leddev.numPixels(), span):
+                for i in range(0, self._leddev.numPixels() - span + 1, span):
                     self._leddev.setPixelColor(i + q, 0)
 
         return self._stmt_index + 1
@@ -157,11 +157,11 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
             if self._terminate_event.isSet():
                 break
             for q in range(3):
-                for i in range(0, self._leddev.numPixels(), 3):
+                for i in range(0, self._leddev.numPixels() - 2, 3):
                     self._leddev.setPixelColor(i + q, self.wheel((i + j) % 255))
-                    self._leddev.show()
+                self._leddev.show()
                 time.sleep(wait_ms / 1000.0)
-                for i in range(0, self._leddev.numPixels(), 3):
+                for i in range(0, self._leddev.numPixels() - 2, 3):
                     self._leddev.setPixelColor(i + q, 0)
         return self._stmt_index + 1
 

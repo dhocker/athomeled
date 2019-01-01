@@ -33,6 +33,9 @@ def get_driver():
     elif driver == "dotstar" or driver == "apa102":
         from . import dotstar_driver
         d = dotstar_driver.DotStar()
+    elif driver == "ledemulator" or driver == "emulator":
+        from .led_emulator import LEDEmulator
+        d = LEDEmulator()
     else:
         d = dummy_driver.DummyDriver()
 
