@@ -29,5 +29,10 @@ class ScriptVM():
         # Defines
         self.defines = {}
 
+        # Evaluated values
+        self.evals = {}
+        self.evals["color77-default"] = \
+            "[(255,0,0),(0,255,0),(0,0,255),(255,255,0),(255,0,255),(0,255,255),(255,0,255)]"
+
         # Main statement index
         self.main_index = -1

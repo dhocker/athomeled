@@ -15,6 +15,7 @@
 
 import datetime
 import logging
+import re
 
 logger = logging.getLogger("led")
 
@@ -40,6 +41,7 @@ class ScriptCompiler:
         # Valid statements and their handlers
         self._valid_stmts = {
             "define": self.define_stmt,
+            "eval": self.eval_stmt,
             "import": self.import_stmt,
             "logmessage": self.logmessage_stmt,
             "do-for-n": self.do_for_n_stmt,
@@ -316,20 +318,35 @@ class ScriptCompiler:
         stmt_tokens[1] = stmt_tokens[1].rstrip()
         return stmt_tokens
 
-    def value_stmt(self, tokens):
+    def eval_stmt(self, tokens):
         """
-        value name v1...vn where vn 0-255
+        eval name valid-python-definition-expression
         :param tokens:
         :return:
         """
         if len(tokens) < 3:
             self.script_error("Not enough tokens")
             return None
-        if self.are_valid_values(tokens[2:]):
-            self.add_values(tokens[1], tokens[2:])
-        else:
-            self.script_error("Value(s) must be 0-255")
+
+        # Use regex to parse statement
+        regex = r"^\s*(\S+)\s+(\S+)\s+(\S.*$)"
+        rp = re.compile(regex)
+        # The match should produce 3 groups where
+        # 1 = eval
+        # 2 = name
+        # 3 = eval-expression
+        rm = rp.match(self._stmt)
+        if not rm:
+            self.script_error("Invalid eval statement: " + self._stmt)
             return None
+
+        try:
+            v = eval(rm.group(3))
+            self._vm.evals[rm.group(2)] = v
+        except Exception as ex:
+            self.script_error(str(ex))
+            return None
+
         return []
 
     def define_stmt(self, tokens):

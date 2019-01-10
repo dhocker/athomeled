@@ -211,7 +211,20 @@ A valid define value is an integer or floating point number. For example, 10.0 o
 Use the color statement to define an RGB color.
 
     color name red green blue
-    
+
+### Eval
+Use the eval statement to define a named value where the value is a Python expression.
+Any expression that is valid on the right side of a Python assignment statement is valid.
+The eval statement is useful for things like defining a list of colors.
+
+    eval name python-expression
+
+For example
+
+    eval color-list [(255,0,0),(0,255,0),(0,0,255),(255,255,0),(255,0,255),(0,255,255),(255,255,255)]
+
+defines the color-list named value as a list of 7 color 3-tuples.
+
 ### Import
 The import statement includes another file into the script file. This works like a C/C++ include or a Python import
 statement. The content of the imported file is inserted into the script in line. There is no duplicate import
