@@ -10,6 +10,7 @@
 #
 
 import socket
+from struct import pack
 from .driver_base import DriverBase
 
 #
@@ -74,13 +75,7 @@ class LEDEmulator(DriverBase):
     def show(self):
         # Convert the frame as a list to a string of bytes
         frame_bytes = bytes(self._frame)
-        total_sent = 0
-        while total_sent < len(frame_bytes):
-            sent = self._sock.send(frame_bytes[total_sent:])
-            if sent == 0:
-                raise RuntimeError("socket connection broken")
-            total_sent += sent
-        # print("Sent:", total_sent)
+        LEDEmulator.frame_send(self._sock, frame_bytes)
 
         return True
 
@@ -118,6 +113,22 @@ class LEDEmulator(DriverBase):
         :return: None
         """
         return self._sock.close()
+
+    @staticmethod
+    def frame_send(sock, frame):
+        LEDEmulator.block_send(sock, len(frame))
+        LEDEmulator.block_send(sock, frame)
+
+    @staticmethod
+    def block_send(sock, block):
+        total_sent = 0
+        if isinstance(block, int):
+            block = pack('!i', block)
+        while total_sent < len(block):
+            sent = sock.send(block[total_sent:])
+            if sent == 0:
+                raise RuntimeError("socket connection broken")
+            total_sent = total_sent + sent
 
     @staticmethod
     def color(r, g, b, gamma=False):
