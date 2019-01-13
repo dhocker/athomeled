@@ -386,13 +386,13 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
 
     def color77_stmt(self, stmt):
         """
-        color77 wait iterations
+        color77 color-list wait iterations
         :param stmt:
         :return:
         """
-        pixel_gen = Color77PixelGenerator(num_pixels=self._leddev.numPixels())
-        wait_ms = stmt[1]
-        iterations = stmt[2]
+        pixel_gen = Color77PixelGenerator(num_pixels=self._leddev.numPixels(), color_list=stmt[1])
+        wait_ms = stmt[2]
+        iterations = stmt[3]
 
         pixel_gen.start()
 

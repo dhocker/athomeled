@@ -205,6 +205,16 @@ class ScriptCompiler:
         else:
             return None
 
+    def resolve_eval(self, token):
+        """
+        Resolve a token that is subject to substitution by an eval.
+        :param token:
+        :return: The resolved value of the token.
+        """
+        if token in self._vm.evals:
+            return self._vm.evals[token]
+        return None
+
     def resolve_color_arg(self, tokens, index):
         """
         Resolve an RGB color argument. The argument consists of either 1 or 3 tokens.
@@ -802,12 +812,25 @@ class ScriptCompiler:
 
     def color77_stmt(self, tokens):
         """
-        color77 [wait=200.0] [iterations=100]
+        color77 [color-list=color77-default [wait=200.0] [iterations=100]]
         :param tokens:
         :return:
         """
         trans_tokens = [tokens[0]]
         token_index = 1 # Initially the first arg after the command
+
+        # Default statement check
+        if len(tokens) == 1:
+            trans_tokens.append(self._vm.evals["color77-default"])
+            token_index += 1
+        else:
+            # The first arg MUST be a color-list
+            cl = self.resolve_eval(tokens[1])
+            if cl:
+                trans_tokens.append(cl)
+            else:
+                self.script_error("Undefined color-list eval: " + tokens[1])
+                return None
 
         # Resolve wait
         r = self.resolve_wait_arg(tokens, token_index, default=200.0)

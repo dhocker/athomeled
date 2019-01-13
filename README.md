@@ -219,9 +219,9 @@ The eval statement is useful for things like defining a list of colors.
 
     eval name python-expression
 
-For example
+For example, here is the default color-list definition.
 
-    eval color-list [(255,0,0),(0,255,0),(0,0,255),(255,255,0),(255,0,255),(0,255,255),(255,255,255)]
+    eval color77-default [(255,0,0),(0,255,0),(0,0,255),(255,255,0),(255,0,255),(0,255,255),(255,255,255)]
 
 defines the color-list named value as a list of 7 color 3-tuples.
 
@@ -458,13 +458,22 @@ For the set of colors abcdefg, the sequence looks like this.
 
 The command is:
 
-    color77 [wait=200.0] [iterations=100]
+    color77 [color-list-name=color77-default [wait=200.0] [iterations=100]]
+
+The color-list-name is the name of an eval statement defining a list of
+**exactly** 7 color 3-tuples. See [Eval](#eval). If no color-list-name
+is provided, a default color list is used.
 
 The wait time controls how fast the algorithm runs and the iterations
 determines how long the command runs.
 
-Currently, the set of 7 colors is fixed. However, in the future there will be
-some way to set the colors.
+The minimum command
+
+    color77
+
+is equivalent to 
+
+    color77 color77-default 200.0 100
 
 #### Scrollpixels
 Starting from the first pixel, scrolls a group of 5 pixels across the strip. 

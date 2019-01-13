@@ -31,8 +31,16 @@ class ScriptVM():
 
         # Evaluated values
         self.evals = {}
-        self.evals["color77-default"] = \
-            "[(255,0,0),(0,255,0),(0,0,255),(255,255,0),(255,0,255),(0,255,255),(255,0,255)]"
+        # The default color list for the color77 alg
+        self.evals["color77-default"] = [
+            (255,0,0),
+            (0,255,0),
+            (0,0,255),
+            (255,255,0),
+            (255,0,255),
+            (0,255,255),
+            (255,0,255)
+        ]
 
         # Main statement index
         self.main_index = -1

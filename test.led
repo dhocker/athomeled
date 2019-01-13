@@ -16,17 +16,28 @@ color green 0 255 0
 color blue 0 0 255
 
 define wait1 50.0
-define qtr-bright 64
-define half-bright 128
+define qtr-bright 63
+define half-bright 127
+define max-bright 255
+
+define do-count 2
+
+define chase-wait 100.0
 
 # Main do loop
 # The main do loop runs until the app is terminated.
 ## This will run the program every day at hh:mm:ss (24 hour clock)
 #Do-At 14:31:00
-#do-for 00:01:00
-    solidcolor red
-    solidcolor green
-    solidcolor blue
+do-for 00:01:00
+    color77 250 200
+    do-for-n do-count
+        do-for 00:00:01
+            pause 00:00:01
+        do-for-end
+        solidcolor red
+        solidcolor green
+        solidcolor blue
+    do-for-n-end
 
     sinewave
     sinewave 33 444 63 64
@@ -37,8 +48,8 @@ define half-bright 128
     colorwipe blue wait1
     rainbow 21.0 2
     rainbowcycle 19.0 4
-    theaterchase 255 83 13 50.0 20
-    theaterchaserainbow 50.0
+    theaterchase 255 83 13 chase-wait 20
+    theaterchaserainbow chase-wait
     scrollpixels green 21.0 999
     randompixels 22.0 501
     reset
@@ -49,12 +60,12 @@ define half-bright 128
     colorwipe blue wait1
     rainbow 21.0 2
     rainbowcycle 19.0 4
-    theaterchase 255 83 13 50.0 20
-    theaterchaserainbow 50.0
+    theaterchase 255 83 13 chase-wait 20
+    theaterchaserainbow chase-wait
     scrollpixels blue 21.0 999
     randompixels 22.0 501
     reset
-#do-for-end
+do-for-end
 
 # If there is no loop statement, the script ends when there
 # are no more statements.
