@@ -4,5 +4,5 @@ rpi-ws281x==4.0.0; platform_machine == 'armv6l'
 -e git+https://github.com/dhocker/athomesocketserver.git#egg=athomesocketserver
 -e git+https://github.com/dhocker/athomeutils.git#egg=athomeutils
 -e git+https://github.com/dhocker/colorcycler.git#egg=colorcycler
--e git+https://github.com/dhocker/Adafruit_DotStar_Pi.git#egg=Adafruit_DotStar_Pi
+-e git+https://github.com/dhocker/Adafruit_DotStar_Pi.git#egg=dotstar
 psutil
