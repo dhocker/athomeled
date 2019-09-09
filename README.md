@@ -1,5 +1,5 @@
 # AtHomeLED - LED Light Strip Server
-Copyright © 2016, 2018 by Dave Hocker
+Copyright © 2016, 2019 by Dave Hocker
 
 ## Overview
 The AtHomeLED server is designed to run simple LED strip light shows on
@@ -75,7 +75,10 @@ some but not all dependencies. This includes:
 
 The following dependencies must be individually and manually installed from source.
 
-* [Adafruit_DotStar_Pi](https://github.com/adafruit/Adafruit_DotStar_Pi)
+* [Adafruit_DotStar_Pi](https://github.com/dhocker/Adafruit_DotStar_Pi)
+
+**Note that this is a fork of the Adafruit_DotStar_Pi repo. Unfortunately, the Adafruit repo
+has been deprecated and archived.**
 
 ## Configuration <a id="configuration"></a>
 
@@ -84,7 +87,7 @@ file is to copy at_home_led.example.conf to at_home_led.conf and edit as require
 
 |Key           | Use         |
 |------------- |-------------|
-| Driver | WS2811, NeoPixels, APA102 or DotStar. Case insensitive. |
+| Driver | Case insensitive<br/>Choices:<br/>WS2811 or NeoPixels (3-wire)<br/>APA102 or DotStar (4-wire)<br/>led-emulator or emulator (requires [led-emulator](https://github.com/dhocker/led-emulator)) |
 | NumberPixels | Number of LEDs in the string or strip. |
 | ColorOrder | The order of colors as sent to the LED strip. Only applies to APA102/DotStars. Default and recommended value is rgb. |
 | Invert | Inverts data signal. For WS2811 only. Use when no level shifter is employed. |
@@ -139,6 +142,25 @@ Example at_home_led.conf:
         "Driver": "dotstar",
         "NumberPixels": "30",
         "ColorOrder": "rgb",
+        "ScriptFileDirectory": "/home/pi/rpi/athomeled",
+        "Port": "5000",
+        "LogFile": "/home/pi/rpi/athomeled/at_home_led.log",
+        "LogConsole": "True",
+        "LogLevel": "DEBUG"
+      }
+    }
+
+### led-emulator/emulator
+You must setup and install the [led-emulator](https://github.com/dhocker/led-emulator) in
+order to use the led-emulator driver.
+
+Example at_home_led.conf:
+
+    {
+      "Configuration":
+      {
+        "Driver": "led-emulator",
+        "NumberPixels": "30",
         "ScriptFileDirectory": "/home/pi/rpi/athomeled",
         "Port": "5000",
         "LogFile": "/home/pi/rpi/athomeled/at_home_led.log",
