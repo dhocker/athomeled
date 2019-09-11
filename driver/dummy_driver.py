@@ -73,5 +73,5 @@ class DummyDriver(DriverBase):
         # Based on empiracle observation when the order is rgb
         # when order='rgb'
         if gamma:
-            return (DummyDriver.gamma8[b] << 16) | (DummyDriver.gamma8[g] << 8) | DummyDriver.gamma8[r]
+            return (DummyDriver._gamma8[b] << 16) | (DummyDriver._gamma8[g] << 8) | DummyDriver._gamma8[r]
         return (b << 16) | (g << 8) | r
