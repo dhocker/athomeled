@@ -14,6 +14,9 @@ import busio
 from adafruit_bus_device import spi_device
 from circuitpython_dotstarapa102.dotstarapa102 import DotStarAPA102
 from .driver_base import DriverBase
+import logging
+
+logger = logging.getLogger("led")
 
 
 class CPDotStarAPA102Driver(DriverBase):
@@ -51,6 +54,8 @@ class CPDotStarAPA102Driver(DriverBase):
         """
         self._numpixels = num_pixels
         self._order = order
+        logger.debug("CircuitPythonDotStarAPA102 driver adapter")
+        logger.debug("num_pixels=%d, order=%s", num_pixels, order)
         # Try to create an SPI device for the onboard SPI interface
         # We are using the standard SPI pins
         # SCLK = #23 (clock)
