@@ -1,6 +1,6 @@
 #
 # AtHomeLED -  CircuitPython_DotStarAPA102 driver adapter
-# Copyright © 2019  Dave Hocker
+# Copyright © 2019  Dave Hocker (AtHomeX10@gmail.com)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -39,8 +39,18 @@ class CPDotStarAPA102Driver(DriverBase):
         """
         return self._strip
 
-    def open(self, num_pixels, datapin=10, clockpin=11, order='rgb'):
+    def open(self, num_pixels, datapin=10, clockpin=11, order='bgr'):
+        """
+        Open/initialize the LED string connected to the standard SPI interface.
+        :param num_pixels: Number of LEDs in the string
+        :param datapin: Not used, ignored. The standard SPI interface is used.
+        :param clockpin: Not used, ignored. The standard SPI interface is used.
+        :param order: The color order used by the string. Note that the default
+        color order is reversed from the typcial 'rgb' order.
+        :return:
+        """
         self._numpixels = num_pixels
+        self._order = order
         # Try to create an SPI device for the onboard SPI interface
         # We are using the standard SPI pins
         # SCLK = #23 (clock)
@@ -64,7 +74,7 @@ class CPDotStarAPA102Driver(DriverBase):
         self._spi_dev = spi_device.SPIDevice(self._spi_bus, baudrate=15000000, polarity=1, phase=0)
 
         # Create driver from the context manager
-        self._driver = DotStarAPA102(self._spi_dev, num_pixels)
+        self._driver = DotStarAPA102(self._spi_dev, self._num_pixels, order=self._order)
 
         return self._begin()
 
@@ -72,6 +82,10 @@ class CPDotStarAPA102Driver(DriverBase):
         return True
 
     def show(self):
+        """
+        Transmit all pixels to the LED string.
+        :return:
+        """
         self._driver.show()
         return True
 
@@ -80,17 +94,29 @@ class CPDotStarAPA102Driver(DriverBase):
 
     def setBrightness(self, brightness):
         """
-            brightness: 0 - 255
+        Set the global brightness level
+        :param brightness: 0-255
+        :return:
         """
-        # Driver brightness is 0-31, so we scale it here
+        # Driver brightness is 0-31, so we simply scale it here
         self._driver.global_brightness = int(brightness / 8)
         return True
 
     def setPixelColor(self, index, color_value):
+        """
+        Set the color of a given pixel
+        :param index: pixel 0-n where n = num_pixels - 1
+        :param color_value: A color value in the form 0xRRGGBB.
+        :return:
+        """
         self._driver.set_pixel_color(index, color_value)
         return True
 
     def clear(self):
+        """
+        Set all pixels to off.
+        :return:
+        """
         self._driver.clear()
         return True
 
@@ -108,5 +134,5 @@ class CPDotStarAPA102Driver(DriverBase):
         # Based on empiracle observation when the order is rgb
         # when order='rgb'
         if gamma:
-            return (DummyDriver.gamma8[b] << 16) | (DummyDriver.gamma8[g] << 8) | DummyDriver.gamma8[r]
+            return (self.gamma8[b] << 16) | (self.gamma8[g] << 8) | self.gamma8[r]
         return (b << 16) | (g << 8) | r
