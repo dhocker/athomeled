@@ -36,6 +36,9 @@ def get_driver():
     elif driver == "ledemulator" or driver == "emulator":
         from .led_emulator import LEDEmulator
         d = LEDEmulator()
+    elif driver == "circuitpython_dotstarapa102"  or driver == "cpdotstarapa102":
+        from .cp_dotstarapa102 import CPDotStarAPA102Driver
+        d = CPDotStarAPA102Driver()
     else:
         d = dummy_driver.DummyDriver()
 
