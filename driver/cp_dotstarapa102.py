@@ -74,7 +74,7 @@ class CPDotStarAPA102Driver(DriverBase):
         self._spi_dev = spi_device.SPIDevice(self._spi_bus, baudrate=15000000, polarity=1, phase=0)
 
         # Create driver from the context manager
-        self._driver = DotStarAPA102(self._spi_dev, self._num_pixels, order=self._order)
+        self._driver = DotStarAPA102(self._spi_dev, self._numpixels, order=self._order)
 
         return self._begin()
 
