@@ -16,7 +16,7 @@
 import board
 import busio
 from adafruit_bus_device import spi_device
-from adafruit-circuitpython-ws2801 import adafruit_ws2801
+import neopixel
 from .driver_base import DriverBase
 import logging
 
@@ -30,9 +30,31 @@ class AdafruitCircuiPythonWS28xxDriver(DriverBase):
     Add the driver to the app by modifying the driver.manager.get_driver()
     method.
     """
+    # The NeoPixel driver is problematic. Once the driver is created
+    # it can't be recreated. Thus, we manage it as a singleton.
+    _driver = None
+
+    # Convert color order to tuple
+    _color_order = {
+        "b": 0,
+        "g": 1,
+        "r": 2
+    }
 
     def __init__(self):
         DriverBase.__init__(self)
+
+    def __del__(self):
+        """
+        Class destructor. Note that there is a memory leak in the NeoPixel
+        driver which will show as an error message when the using program
+        exits.
+        """
+        # Delete the singleton NeoPixel driver instance once and only once
+        if AdafruitCircuiPythonWS28xxDriver._driver:
+            AdafruitCircuiPythonWS28xxDriver._driver.deinit()
+            del AdafruitCircuiPythonWS28xxDriver._driver
+            AdafruitCircuiPythonWS28xxDriver._driver = None
 
     @property
     def name(self):
@@ -62,8 +84,14 @@ class AdafruitCircuiPythonWS28xxDriver(DriverBase):
         logger.debug("num_pixels=%d, order=%s", num_pixels, order)
         if datapin != 18:
             raise ValueError("DataPin value is not supported (only pin 18)")
+        # Forced to rgb ordering (which is bgr to the driver)
+        # TODO Figue out how to translated "rgb" to tuple
+        pixel_order = self._translate_color_order(order)
         # For PWM there is no clock pin, only a data pin
-        self._driver = adafruit_ws2801.WS2801(None, board.D18, 25, auto_write=False)
+        # Manage a singleton copy of the NeoPixel driver
+        if not AdafruitCircuiPythonWS28xxDriver._driver:
+            AdafruitCircuiPythonWS28xxDriver._driver = neopixel.NeoPixel(board.D18, num_pixels, pixel_order=pixel_order, auto_write=False)
+        self._driver = AdafruitCircuiPythonWS28xxDriver._driver
 
         return self._begin()
 
@@ -116,9 +144,11 @@ class AdafruitCircuiPythonWS28xxDriver(DriverBase):
         Close and release the current device.
         :return: None
         """
-        self.clear()
-        # Not absolutely required but here for completeness
-        self._driver.deinit();
+        # self.clear()
+        # self._driver.deinit();
+        # del self._driver
+        self._driver = None
+        logger.debug("AdafruitCircuiPythonWS28xxDriver closed")
         return True
 
     def color(self, r, g, b, gamma=False):
@@ -127,3 +157,14 @@ class AdafruitCircuiPythonWS28xxDriver(DriverBase):
         if gamma:
             return (self.gamma8[b] << 16) | (self.gamma8[g] << 8) | self.gamma8[r]
         return (b << 16) | (g << 8) | r
+    
+    @classmethod
+    def _translate_color_order(cls, order):
+        if len(order) == 3:
+            one = cls._color_order[order[0]]
+            two = cls._color_order[order[1]]
+            three = cls._color_order[order[2]]
+            return (one, two, three)
+        # RGB default
+        return (2, 1, 0)
+
