@@ -39,6 +39,10 @@ def get_driver():
     elif driver == "circuitpython_dotstarapa102"  or driver == "cpdotstarapa102":
         from .cp_dotstarapa102 import CPDotStarAPA102Driver
         d = CPDotStarAPA102Driver()
+    # The name could be longer...:-)
+    elif driver == "adafruit-circuitpython-ws2801" or driver == "adafruit_circuitpython_ws2801":
+        from .cp_ws28xx import AdafruitCircuiPythonWS28xxDriver
+        d = AdafruitCircuiPythonWS28xxDriver()
     else:
         d = dummy_driver.DummyDriver()
 

@@ -14,3 +14,6 @@ RPi.GPIO
 
 # CircuitPython_DotStarAPA102
 -e git+https://github.com/dhocker/CircuitPython_DotStarAPA102.git#egg=circuitpython-dotstarapa102
+
+# Adafruit_CircuitPython_WS2801
+adafruit-circuitpython-ws2801
