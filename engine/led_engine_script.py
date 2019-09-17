@@ -43,14 +43,8 @@ class LEDEngineScript():
         Returns False if something fails.
         """
 
-        # Open LED interface driver
+        # Get the singleton instance of the LED interface driver
         self._dev = driver.manager.get_driver()
-        if self._dev.open(configuration.Configuration.NumberPixels(), order=configuration.Configuration.ColorOrder()):
-            logger.info("LED interface driver opened")
-        else:
-            logger.error("LED interface driver failed to open")
-            return False
-
         return True
 
     def execute(self):
@@ -70,5 +64,4 @@ class LEDEngineScript():
         Shutdown the script engine
         :return:
         """
-        if self._dev:
-            self._dev.close()
+        self._dev = None

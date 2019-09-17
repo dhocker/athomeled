@@ -22,6 +22,7 @@ import app_trace
 import engine.led_engine
 import engine.led_command_handler
 import disclaimer.disclaimer
+import driver.manager
 import logging
 import signal
 import os
@@ -51,6 +52,7 @@ def main():
     # Orderly clean up of the LED engine
     def CleanUp():
         engine.led_command_handler.LEDCommandHandler.stop_engine()
+        driver.manager.release_driver()
         logger.info("AtHomeLED shutdown complete")
         logger.info("################################################################################")
         app_logger.Shutdown()
@@ -117,6 +119,9 @@ def main():
                 up_time = datetime.datetime.now() - boot_time
         else:
             logger.debug("Clock sync was not required")
+
+    # Set up singleton instance of device driver
+    driver.manager.initialize_driver()
 
     # Set up handler for the kill signal
     signal.signal(signal.SIGTERM, term_handler)  # Activate the server; this will keep running until you

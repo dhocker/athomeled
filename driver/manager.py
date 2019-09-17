@@ -19,12 +19,15 @@ import logging
 
 logger = logging.getLogger("led")
 
-def get_driver():
+# Singleton driver instance
+_driver = None
+
+def initialize_driver():
     """
-    Returns a driver instance for the interface type specified
-    in the configuration file.
-    :return:
+    Initializes a singleton driver instance based on the configuration file
     """
+    global _driver
+
     driver = configuration.Configuration.Driver().lower()
     d = None
     if driver == "ws2811" or driver == "neopixels":
@@ -51,4 +54,24 @@ def get_driver():
     else:
         logger.error("%s is not a recognized LED interface type", driver)
 
-    return d
+    _driver = d
+
+    # Set up driver according to the configuration file
+    if d.open(configuration.Configuration.NumberPixels(), order=configuration.Configuration.ColorOrder()):
+        logger.info("LED interface driver opened")
+    else:
+        logger.error("LED interface driver failed to open")
+        return False
+    return True
+
+def get_driver():
+    # Return the current driver instance
+    global _driver
+    return _driver
+
+def release_driver():
+    global _driver
+    # One time clean up
+    if _driver:
+        _driver.close()
+        _driver = None

@@ -91,6 +91,7 @@ class AdafruitCircuiPythonWS28xxDriver(DriverBase):
         # Manage a singleton copy of the NeoPixel driver
         if not AdafruitCircuiPythonWS28xxDriver._driver:
             AdafruitCircuiPythonWS28xxDriver._driver = neopixel.NeoPixel(board.D18, num_pixels, pixel_order=pixel_order, auto_write=False)
+            logger.debug("A new NeoPixel class instance has been created")
         self._driver = AdafruitCircuiPythonWS28xxDriver._driver
 
         return self._begin()
@@ -127,7 +128,8 @@ class AdafruitCircuiPythonWS28xxDriver(DriverBase):
         :return:
         """
         # The Adafruit driver class implements a pixel list as its basic behavior
-        self._driver[index] = color_value
+        # And, the color can only occupy the lo order 24 bits
+        self._driver[index] = color_value & 0xFFFFFF
         return True
 
     def clear(self):
