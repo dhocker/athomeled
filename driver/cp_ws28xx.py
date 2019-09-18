@@ -30,7 +30,7 @@ class AdafruitCircuiPythonWS28xxDriver(DriverBase):
     """
     # The NeoPixel driver is problematic. Once the driver is created
     # it can't be recreated. Thus, we manage it as a singleton.
-    _driver = None
+    _driver_singleton = None
 
     # Convert color order to tuple
     _color_order = {
@@ -49,10 +49,10 @@ class AdafruitCircuiPythonWS28xxDriver(DriverBase):
         exits.
         """
         # Delete the singleton NeoPixel driver instance once and only once
-        if AdafruitCircuiPythonWS28xxDriver._driver:
-            AdafruitCircuiPythonWS28xxDriver._driver.deinit()
-            del AdafruitCircuiPythonWS28xxDriver._driver
-            AdafruitCircuiPythonWS28xxDriver._driver = None
+        if AdafruitCircuiPythonWS28xxDriver._driver_singleton:
+            AdafruitCircuiPythonWS28xxDriver._driver_singleton.deinit()
+            del AdafruitCircuiPythonWS28xxDriver._driver_singleton
+            AdafruitCircuiPythonWS28xxDriver._driver_singleton = None
 
     @property
     def name(self):
@@ -87,10 +87,10 @@ class AdafruitCircuiPythonWS28xxDriver(DriverBase):
         pixel_order = self._translate_color_order(order)
         # For PWM there is no clock pin, only a data pin
         # Manage a singleton copy of the NeoPixel driver
-        if not AdafruitCircuiPythonWS28xxDriver._driver:
-            AdafruitCircuiPythonWS28xxDriver._driver = neopixel.NeoPixel(board.D18, num_pixels, pixel_order=pixel_order, auto_write=False)
+        if not AdafruitCircuiPythonWS28xxDriver._driver_singleton:
+            AdafruitCircuiPythonWS28xxDriver._driver_singleton = neopixel.NeoPixel(board.D18, num_pixels, pixel_order=pixel_order, auto_write=False)
             logger.debug("A new NeoPixel class instance has been created")
-        self._driver = AdafruitCircuiPythonWS28xxDriver._driver
+        self._driver = AdafruitCircuiPythonWS28xxDriver._driver_singleton
 
         return self._begin()
 
@@ -122,12 +122,13 @@ class AdafruitCircuiPythonWS28xxDriver(DriverBase):
         """
         Set the color of a given pixel
         :param index: pixel 0-n where n = num_pixels - 1
-        :param color_value: A color value in the form 0xRRGGBB.
+        :param color_value: A color value in the form 0xRRGGBB or (r, g, b).
         :return:
         """
         # The Adafruit driver class implements a pixel list as its basic behavior
         # And, the color can only occupy the lo order 24 bits
-        self._driver[index] = color_value & 0xFFFFFF
+        if isinstance(color_value, int):
+            self._driver[index] = color_value & 0xFFFFFF
         return True
 
     def clear(self):
