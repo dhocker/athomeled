@@ -21,7 +21,7 @@ import logging
 logger = logging.getLogger("led")
 
 
-class AdafruitCircuiPythonWS28xxDriver(DriverBase):
+class AdafruitCircuitPythonWS28xxDriver(DriverBase):
     """
     A device driver must implement each of the methods in the DriverBase class.
     The driver class name is arbitrary and generally is not exposed.
@@ -49,14 +49,14 @@ class AdafruitCircuiPythonWS28xxDriver(DriverBase):
         exits.
         """
         # Delete the singleton NeoPixel driver instance once and only once
-        if AdafruitCircuiPythonWS28xxDriver._driver_singleton:
-            AdafruitCircuiPythonWS28xxDriver._driver_singleton.deinit()
-            del AdafruitCircuiPythonWS28xxDriver._driver_singleton
-            AdafruitCircuiPythonWS28xxDriver._driver_singleton = None
+        if AdafruitCircuitPythonWS28xxDriver._driver_singleton:
+            AdafruitCircuitPythonWS28xxDriver._driver_singleton.deinit()
+            del AdafruitCircuitPythonWS28xxDriver._driver_singleton
+            AdafruitCircuitPythonWS28xxDriver._driver_singleton = None
 
     @property
     def name(self):
-        return "AdafruitCircuiPythonWS28xxDriver"
+        return "AdafruitCircuitPythonWS28xxDriver"
 
     @property
     def Device(self):
@@ -78,7 +78,7 @@ class AdafruitCircuiPythonWS28xxDriver(DriverBase):
         """
         self._numpixels = num_pixels
         self._order = order
-        logger.debug("AdafruitCircuiPythonWS28xxDriver driver adapter")
+        logger.debug("AdafruitCircuitPythonWS28xxDriver driver adapter")
         logger.debug("num_pixels=%d, order=%s", num_pixels, order)
         if datapin != 18:
             raise ValueError("DataPin value is not supported (only pin 18)")
@@ -87,10 +87,10 @@ class AdafruitCircuiPythonWS28xxDriver(DriverBase):
         pixel_order = self._translate_color_order(order)
         # For PWM there is no clock pin, only a data pin
         # Manage a singleton copy of the NeoPixel driver
-        if not AdafruitCircuiPythonWS28xxDriver._driver_singleton:
-            AdafruitCircuiPythonWS28xxDriver._driver_singleton = neopixel.NeoPixel(board.D18, num_pixels, pixel_order=pixel_order, auto_write=False)
+        if not AdafruitCircuitPythonWS28xxDriver._driver_singleton:
+            AdafruitCircuitPythonWS28xxDriver._driver_singleton = neopixel.NeoPixel(board.D18, num_pixels, pixel_order=pixel_order, auto_write=False)
             logger.debug("A new NeoPixel class instance has been created")
-        self._driver = AdafruitCircuiPythonWS28xxDriver._driver_singleton
+        self._driver = AdafruitCircuitPythonWS28xxDriver._driver_singleton
 
         return self._begin()
 
@@ -149,7 +149,7 @@ class AdafruitCircuiPythonWS28xxDriver(DriverBase):
         # self._driver.deinit();
         # del self._driver
         self._driver = None
-        logger.debug("AdafruitCircuiPythonWS28xxDriver closed")
+        logger.debug("AdafruitCircuitPythonWS28xxDriver closed")
         return True
 
     def color(self, r, g, b, gamma=False):

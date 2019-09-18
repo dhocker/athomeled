@@ -44,8 +44,8 @@ def initialize_driver():
         d = CPDotStarAPA102Driver()
     # The name could be longer...:-)
     elif driver == "adafruit-circuitpython-neopixel" or driver == "adafruit_circuitpython_neopixel":
-        from .cp_ws28xx import AdafruitCircuiPythonWS28xxDriver
-        d = AdafruitCircuiPythonWS28xxDriver()
+        from .cp_ws28xx import AdafruitCircuitPythonWS28xxDriver
+        d = AdafruitCircuitPythonWS28xxDriver()
     else:
         d = dummy_driver.DummyDriver()
 
