@@ -14,8 +14,6 @@
 #
 
 import board
-import busio
-from adafruit_bus_device import spi_device
 import neopixel
 from .driver_base import DriverBase
 import logging
