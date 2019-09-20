@@ -26,14 +26,14 @@ Using the remote control interface you can:
 There are several different kinds of LED strips depending on which 
 controller string is used. AtHomeLED supports the following.
 
-* WS2811 based LED strings
-* APA102 (SPI protocol) based LED strips (e.g. Adafruit DotStars)
+* WS2811 (3-wire PWM protocol) based LED strips/strings (e.g. Adafruit NeoPixels)
+* APA102 (4-wire SPI protocol) based LED strips/strings (e.g. Adafruit DotStars)
 
 How to wire these to a Raspberry Pi is out of the scope of this
 document, but examples of how to wire these strings can be found in
 the [references](#references).
 
-AtHomeLED comes with a driver for the both of these LED strings.
+AtHomeLED comes with drivers for the both of these LED strings.
 If you want to
 use another LED string type you will need to write your own driver. 
 The AtHomeLED/driver/dummy_driver.py
@@ -66,42 +66,108 @@ AtHomeLED has been tested on Raspbian Stretch.
 
 ## Dependencies
 The requirements.txt file can be used with pip to create the required virtual environment with 
-some but not all dependencies. This includes:
+some all dependencies. This includes:
 
-* [rpi-ws281x](https://pypi.org/project/rpi_ws281x/)
+* rpi-ws281x
 * [athomesocketserver](https://www.github.com/dhocker/athomesocketserver)
 * [ColorCycler](https://github.com/dhocker/colorcycler.git)
 * [AtHomeUtils](https://github.com/dhocker/athomeutils.git)
-
-The following dependencies must be individually and manually installed from source.
-
-* [Adafruit_DotStar_Pi](https://github.com/dhocker/Adafruit_DotStar_Pi)
-
-**Note that this is a fork of the Adafruit_DotStar_Pi repo. Unfortunately, the Adafruit repo
-has been deprecated and archived.**
+* [Adafruit_DotStar_Pi](https://github.com/dhocker/Adafruit_DotStar_Pi) 
+* [Adafruit-Blinka](https://github.com/dhocker/Adafruit-Blinka)
+* [Adafruit_CircuitPython_NeoPixel](https://github.com/dhocker/Adafruit_CircuitPython_NeoPixel.git)
+* [CircuitPython_DotStarAPA102](https://github.com/dhocker/CircuitPython_DotStarAPA102)
+* adafruit-circuitpython-busdevice
+* RPi.GPIO
 
 ## Configuration <a id="configuration"></a>
 
 AtHomeLED is setup using the JSON formatted **at_home_led.conf** file. The easiest way to create a configuration
 file is to copy at_home_led.example.conf to at_home_led.conf and edit as required.
 
-|Key           | Use         |
-|------------- |-------------|
-| Driver | Case insensitive<br/>Choices:<br/>WS2811 or NeoPixels (3-wire)<br/>APA102 or DotStar (4-wire)<br/>led-emulator or emulator (requires [led-emulator](https://github.com/dhocker/led-emulator)) |
-| NumberPixels | Number of LEDs in the string or strip. |
-| ColorOrder | The order of colors as sent to the LED strip. Only applies to APA102/DotStars. Default and recommended value is rgb. |
-| Invert | Inverts data signal. For WS2811 only. Use when no level shifter is employed. |
-| DataPin | For WS2811 driver, specifies the output data pin. This is almost always GPIO 18 as it must support PWM. |
-| ScriptFileDirectory | Full path to location where script files are stored. Script files should be named with a .led extension. |
-| LogFile | Full path and name of log file. |
-| LogConsole | True or False. If True logging output will be routed to the log file and the console. |
-| LogLevel | Debug, Info, Warn, or Error. Case insensitive. |
-| Port | The TCP port to be used for remote control. The default is 5000. |
-| Timeout | How long a remote control connection is held open when there is no activity. |
-| AutoRun | Script file to be started when AtHomeDMX starts. The default is none. |
-| WaitForClockSync | In seconds, the amount of up time required to assure time-of-day clock sync. The default is 30. |
+<table>
+  <tbody>
+    <tr style="background:#F2F2F2;">
+      <th align="left">Key</th>
+      <th align="left">Use</th>
+    </tr>
+    <tr>
+      <td>Driver</td>
+      <td>
+        <p>Available drivers. Case insensitive.</p>
+        <ul>
+          <li><b>WS2811</b> or <b>NeoPixels</b> (3-wire PWM protocol). Supports WS281X type strings.</li>
+          <li><b>adafruit-circuitpython-neopixel</b> or <b>adafruit_circuitpython_neopixel</b> (3-wire PWM protocol using CircuitPython).
+            Supports WS281X type strings.
+          </li>
+          <li><b>APA102</b> or <b>DotStar</b> (4-wire SPI protocol). Supports APA102 style strings.</li>
+          <li><b>circuitpython_dotstarapa102</b>  or <b>cpdotstarapa102</b> (4-wire SPI protocol using CircuitPython). 
+          Supports APA102 style strings.</li>
+          <li><b>led-emulator</b> or <b>emulator</b> (requires led-emulator (https://github.com/dhocker/led-emulator))</li>
+        </ul>  
+      </td>
+    </tr>
+    <tr>
+      <td>NumberPixels</td>
+      <td>Number of LEDs in the string or strip.</td>
+    </tr>
+      <td>ColorOrder</td>
+      <td>The order of colors as sent to the LED strip. Only applies to APA102/DotStars. Default and recommended value is rgb.</td>
+    <tr>
+      <td>Invert</td>
+      <td>Inverts data signal. For WS2811 only. Use when no level shifter is employed.</td>
+    </tr>
+    <tr>
+      <td>DataPin</td>
+      <td>For WS2811 driver, specifies the output data pin (BCM numbering). This is almost always GPIO 18 as it must support PWM.</td>
+    </tr>
+    <tr>
+      <td>ScriptFileDirectory</td>
+      <td>Full path to location where script files are stored. Script files should be named with a .led extension. </td>
+    </tr>
+    <tr>
+      <td>LogFile</td>
+      <td>Full path and name of log file.</td>
+    </tr>
+    <tr>
+      <td>LogConsole</td>
+      <td><b>True or False</b>. If True logging output will be routed to the log file and the console.</td>
+    </tr>
+    <tr>
+      <td>LogLevel</td>
+      <td><b>Debug, Info, Warn, or Error</b>. Case insensitive. </td>
+    </tr>
+    <tr>
+      <td>Port</td>
+      <td>The TCP port to be used for remote control. The default is 5000.</td>
+    </tr>
+    <tr>
+      <td>Timeout</td>
+      <td>How long a remote control connection is held open when there is no activity.</td>
+    </tr>
+    <tr>
+      <td>AutoRun</td>
+      <td>Script file to be started when AtHomeDMX starts. The default is none.</td>
+    </tr>
+    <tr>
+      <td>WaitForClockSync</td>
+      <td>In seconds, the amount of up time required to assure time-of-day clock sync. The default is 30 seconds.</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Device Driver Configuration
+Generally, there are two categories of drivers.
+
+Those that pre-date CircuitPython such as:
+* DotStar
+* WS2811
+
+Those that use CircuitPython. CircuitPython appears to be the future, but the legacy
+drivers seem to be more mature. Also, the level of support for CircuitPython based 
+drivers is unknown. This includes:
+* circuitpython_dotstarapa102
+* adafruit_circuitpython_neopixel
+
 ### WS2811/NeoPixels
 * **ColorOrder** - Color order on the WS2811 chips is fixed and this value
 is ignored.
