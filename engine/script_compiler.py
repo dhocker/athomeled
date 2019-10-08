@@ -822,7 +822,6 @@ class ScriptCompiler:
         # Default statement check
         if len(tokens) == 1:
             trans_tokens.append(self._vm.evals["color77-default"])
-            token_index += 1
         else:
             # The first arg MUST be a color-list
             cl = self.resolve_eval(tokens[1])
@@ -831,6 +830,7 @@ class ScriptCompiler:
             else:
                 self.script_error("Undefined color-list eval: " + tokens[1])
                 return None
+        token_index += 1
 
         # Resolve wait
         r = self.resolve_wait_arg(tokens, token_index, default=200.0)

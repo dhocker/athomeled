@@ -40,7 +40,6 @@ class Color77PixelGenerator(PixelGenerator):
         super(Color77PixelGenerator, self).__init__(num_pixels=num_pixels)
         # Defaults
         self.num_colors = 7
-        self.pixels = [(0,0,0)] * self.num_pixels
         if color_list:
             if len(color_list) != 7:
                 raise ValueError("Color list must contain 7 items")
@@ -55,6 +54,7 @@ class Color77PixelGenerator(PixelGenerator):
             self.color_list[4] = (255, 255, 255)
             self.color_list[5] = (0, 255, 255)
             self.color_list[6] = (255, 0, 255)
+        self.pixels = [self.color_list[0]] * self.num_pixels
         self.color_index = 0
         self.pixel_index = 0
 
