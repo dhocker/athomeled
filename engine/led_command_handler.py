@@ -117,6 +117,7 @@ class LEDCommandHandler:
             "scriptfiles": self.get_script_files,
             "start": self.start_script,
             "stop": self.stop_script,
+            "shutdown": self.shutdown_controller,
             "status": self.get_status,
             "quit": self.quit_session,
             "close": self.close_connection,
@@ -291,6 +292,25 @@ class LEDCommandHandler:
         LEDCommandHandler.stop_engine()
 
         r.set_state(LEDCommandHandler.STATUS_STOPPED)
+        return r
+
+    def shutdown_controller(self, tokens, command):
+        """
+        Shutdown the host server.
+        :param tokens:
+        :param command:
+        :return:
+        """
+        r = LEDCommandHandler.Response(tokens[0], result=LEDCommandHandler.OK_RESPONSE)
+
+        # Stop any running script
+        LEDCommandHandler.stop_engine()
+        r.set_state(LEDCommandHandler.STATUS_STOPPED)
+
+        # Trigger system shutdown
+        logger.info("Triggering system shutdown now")
+        os.system('sudo shutdown -h now')
+
         return r
 
     @classmethod
