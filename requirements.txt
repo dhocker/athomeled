@@ -8,7 +8,7 @@ rpi-ws281x==4.2.2; platform_machine == 'armv6l'
 psutil
 
 # CircuitPython
--e git+https://github.com/dhocker/Adafruit-Blinka.git#egg=Adafruit_Blinka
+-e git+https://github.com/dhocker/Adafruit_Blinka.git#egg=Adafruit_Blinka
 -e git+https://github.com/dhocker/Adafruit_CircuitPython_NeoPixel.git#egg=adafruit-circuitpython-neopixel
 adafruit-circuitpython-busdevice
 RPi.GPIO
