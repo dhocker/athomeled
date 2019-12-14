@@ -110,6 +110,7 @@ file is to copy at_home_led.example.conf to at_home_led.conf and edit as require
       <td>NumberPixels</td>
       <td>Number of LEDs in the string or strip.</td>
     </tr>
+    <tr>
       <td>ColorOrder</td>
       <td>The order of colors as sent to the LED strip. Only applies to APA102/DotStars. Default and recommended value is rgb.</td>
     <tr>
@@ -150,7 +151,19 @@ file is to copy at_home_led.example.conf to at_home_led.conf and edit as require
     </tr>
     <tr>
       <td>WaitForClockSync</td>
-      <td>In seconds, the amount of up time required to assure time-of-day clock sync. The default is 30 seconds.</td>
+      <td>
+        For Raspberry PI.
+        In seconds, the amount of up time to wait for the system clock to sync
+        with the real world. The default is 60 seconds.
+      </td>
+    </tr>
+    <tr>
+      <td>NTPServer</td>
+      <td>
+        For Raspberry PI.
+        URL for an NTP server to be used to determine when the system clock is in sync.
+        See https://tf.nist.gov/tf-cgi/servers.cgi. The default is time.nist.gov.
+      </td>
     </tr>
   </tbody>
 </table>

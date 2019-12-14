@@ -24,6 +24,7 @@ import engine.led_command_handler
 import disclaimer.disclaimer
 import driver.manager
 import logging
+import rpi_utils
 import signal
 import os
 import time
@@ -108,17 +109,22 @@ def main():
     configuration.Configuration.dump_configuration()
 
     # Wait for clock to sync. This is mostly for Raspberry Pis which do not have a hardware RTC.
-    if configuration.Configuration.WaitForClockSync() > 0:
+    if rpi_utils.is_raspberry_pi(raise_on_errors=False):
         import psutil, datetime
         boot_time = datetime.datetime.fromtimestamp(psutil.boot_time())
         up_time = datetime.datetime.now() - boot_time
         if up_time.seconds < configuration.Configuration.WaitForClockSync():
             logger.debug("Waiting for clock to sync")
-            while up_time.seconds < configuration.Configuration.WaitForClockSync():
-                time.sleep(1)
-                up_time = datetime.datetime.now() - boot_time
+            max_wait = configuration.Configuration.WaitForClockSync()
+            ntp_server = configuration.Configuration.NTPServer()
+            if rpi_utils.wait_for_clock_sync(ntpserver=ntp_server, max_wait=max_wait):
+                logger.info("Clock was synced")
+            else:
+                logger.error("Clock sync failed")
         else:
             logger.debug("Clock sync was not required")
+    else:
+        logger.info("Clock sync is not required for this system (not a Raspberry Pi)")
 
     # Set up singleton instance of device driver
     driver.manager.initialize_driver()

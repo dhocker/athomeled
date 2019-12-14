@@ -201,7 +201,12 @@ class Configuration():
     ######################################################################
     @classmethod
     def WaitForClockSync(cls):
-        return int(cls.get_config_var("WaitForClockSync", default_value=30))
+        return int(cls.get_config_var("WaitForClockSync", default_value=60))
+
+    ######################################################################
+    @classmethod
+    def NTPServer(cls):
+        return int(cls.get_config_var("NTPServer", default_value="time.nist.gov"))
 
     ######################################################################
     @classmethod

@@ -6,6 +6,7 @@ rpi-ws281x==4.2.2; platform_machine == 'armv6l'
 -e git+https://github.com/dhocker/colorcycler.git#egg=colorcycler
 -e git+https://github.com/dhocker/Adafruit_DotStar_Pi.git#egg=dotstar
 psutil
+ntplib
 
 # CircuitPython
 -e git+https://github.com/dhocker/Adafruit_Blinka.git#egg=Adafruit_Blinka
