@@ -72,15 +72,22 @@ def wait_for_clock_sync(ntpserver="time.nist.gov", max_wait=120):
     @param max_wait: Length of time in seconds to wait for clock to sync.
     @return:
     """
-    client = ntplib.NTPClient()
-    response = client.request(ntpserver, version=3)
-    start_time = datetime.datetime.now()
-    logger.debug("Starting system clock = %f", start_time)
-    max_wait = float(max_wait)
-    while time.time() < response.tx_time:
-        time.sleep(1.0)
-        logger.debug("Current system clock = %f, time.time()")
-        elapsed = datetime.datetime.now() - start_time
-        if elapsed.total_seconds() > max_wait:
-            return False
-    return True
+    for retry in range(5):
+        try:
+            client = ntplib.NTPClient()
+            response = client.request(ntpserver, version=3)
+            start_time = datetime.datetime.now()
+            logger.debug("Starting system clock = %f", start_time)
+            max_wait = float(max_wait)
+            while time.time() < response.tx_time:
+                time.sleep(1.0)
+                logger.debug("Current system clock = %f, time.time()")
+                elapsed = datetime.datetime.now() - start_time
+                if elapsed.total_seconds() > max_wait:
+                    return False
+            return True
+        except Exception as ex:
+            logger.error("Exception occurred trying to sync system clock")
+            logger.error(str(ex))
+
+    return False
