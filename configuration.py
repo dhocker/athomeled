@@ -206,7 +206,7 @@ class Configuration():
     ######################################################################
     @classmethod
     def NTPServer(cls):
-        return int(cls.get_config_var("NTPServer", default_value="time.nist.gov"))
+        return str(cls.get_config_var("NTPServer", default_value="time.nist.gov"))
 
     ######################################################################
     @classmethod

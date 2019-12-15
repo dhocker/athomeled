@@ -114,9 +114,9 @@ def main():
         boot_time = datetime.datetime.fromtimestamp(psutil.boot_time())
         up_time = datetime.datetime.now() - boot_time
         if up_time.seconds < configuration.Configuration.WaitForClockSync():
-            logger.debug("Waiting for clock to sync")
             max_wait = configuration.Configuration.WaitForClockSync()
             ntp_server = configuration.Configuration.NTPServer()
+            logger.debug("Waiting for clock to sync")
             if rpi_utils.wait_for_clock_sync(ntpserver=ntp_server, max_wait=max_wait):
                 logger.info("Clock was synced")
             else:

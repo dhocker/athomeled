@@ -72,22 +72,37 @@ def wait_for_clock_sync(ntpserver="time.nist.gov", max_wait=120):
     @param max_wait: Length of time in seconds to wait for clock to sync.
     @return:
     """
+    logger.debug("Wait for clock sync called")
+
+    # Manually track elapsed time to avoid using system clock
+    elapsed = 0.0
+
+    # Run the clock sync procedure a fixed number of times before giving up
     for retry in range(5):
         try:
+            # Get the local time from the designated NTP server
             client = ntplib.NTPClient()
-            response = client.request(ntpserver, version=3)
-            start_time = datetime.datetime.now()
-            logger.debug("Starting system clock = %f", start_time)
+            logger.debug("Calling NTPServer %s", ntpserver)
+            response = client.request(ntpserver)
+            logger.debug("Starting system clock = %f", datetime.datetime.now().timestamp())
+            logger.debug("NTPServer time = %f", response.tx_time)
             max_wait = float(max_wait)
+            # Loop until system time catches up to NTP time or max wait time is exhausted
             while time.time() < response.tx_time:
-                time.sleep(1.0)
-                logger.debug("Current system clock = %f, time.time()")
-                elapsed = datetime.datetime.now() - start_time
-                if elapsed.total_seconds() > max_wait:
+                if elapsed > max_wait:
                     return False
+                time.sleep(1.0)
+                elapsed += 1.0
+                t = time.time()
+                logger.debug("Current system clock = %f, delta = %f", t, response.tx_time - t)
             return True
         except Exception as ex:
+            # During boot up, several different network errors can occur.
+            # Basically, we keep trying until the network is up.
             logger.error("Exception occurred trying to sync system clock")
             logger.error(str(ex))
+            logger.debug("Waiting to retry")
+            time.sleep(5.0)
+            elapsed += 5.0
 
     return False
