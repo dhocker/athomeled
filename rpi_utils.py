@@ -18,7 +18,6 @@
 #
 
 import io
-import datetime
 import time
 import logging
 import ntplib
@@ -84,11 +83,12 @@ def wait_for_clock_sync(ntpserver="time.nist.gov", max_wait=120):
             client = ntplib.NTPClient()
             logger.debug("Calling NTPServer %s", ntpserver)
             response = client.request(ntpserver)
-            logger.debug("Starting system clock = %f", datetime.datetime.now().timestamp())
+            t = time.time()
+            logger.debug("Starting system clock = %f", t)
             logger.debug("NTPServer time = %f", response.tx_time)
             max_wait = float(max_wait)
             # Loop until system time catches up to NTP time or max wait time is exhausted
-            while time.time() < response.tx_time:
+            while t < response.tx_time:
                 if elapsed > max_wait:
                     return False
                 time.sleep(1.0)
