@@ -137,12 +137,18 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
             if self._terminate_event.isSet():
                 break
             for q in range(span):
-                for i in range(0, self._leddev.numPixels() - span + 1, span):
-                    self._leddev.setPixelColor(i + q, color)
+                i = q
+                while i < self._leddev.numPixels():
+                    self._leddev.setPixelColor(i, color)
+                    i += span
+
                 self._leddev.show()
                 time.sleep(wait_ms/1000.0)
-                for i in range(0, self._leddev.numPixels() - span + 1, span):
-                    self._leddev.setPixelColor(i + q, 0)
+
+                i = q
+                while i < self._leddev.numPixels():
+                    self._leddev.setPixelColor(i, 0)
+                    i += span
 
         return self._stmt_index + 1
 
@@ -153,16 +159,23 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
         :return:
         """
         wait_ms = float(stmt[1])
+        span = 3
         for j in range(256):
             if self._terminate_event.isSet():
                 break
-            for q in range(3):
-                for i in range(0, self._leddev.numPixels() - 2, 3):
-                    self._leddev.setPixelColor(i + q, self.wheel((i + j) % 255))
+            for q in range(span):
+                i = q
+                while i < self._leddev.numPixels():
+                    self._leddev.setPixelColor(i, self.wheel((i + j) % 255))
+                    i += span
+
                 self._leddev.show()
                 time.sleep(wait_ms / 1000.0)
-                for i in range(0, self._leddev.numPixels() - 2, 3):
-                    self._leddev.setPixelColor(i + q, 0)
+
+                i = q
+                while i < self._leddev.numPixels():
+                    self._leddev.setPixelColor(i, 0)
+                    i += span
         return self._stmt_index + 1
 
     #
