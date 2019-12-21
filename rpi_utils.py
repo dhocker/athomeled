@@ -28,30 +28,37 @@ def is_raspberry_pi(raise_on_errors=False):
     """
     Determines if the current system is Raspberry Pi based.
     If the /proc/cpuinfo file exists it is opened and searched for a
-    Model record. If a Model record is found it is tested to see if it
-    starts with "Raspberry Pi" in which case a Raspberry Pi is recognized.
+    Hardware record. If a Hardware record is found it is tested to see if it
+    is an RPi CPU in which case a Raspberry Pi is recognized.
+    Ref: https://raspberrypi.stackexchange.com/questions/5100/detect-that-a-python-program-is-running-on-the-pi
     @param raise_on_errors: True to raise exceptions for errors. False to return True/False result.
     @return: True or False.
     """
+    rpi_hardware_list = [
+        'BCM2708',
+        'BCM2709',
+        'BCM2835',
+        'BCM2836'
+    ]
     try:
         with io.open('/proc/cpuinfo', 'r') as cpuinfo:
             found = False
-            # Look for the Model record
+            # Look for the Hardware record
             for line in cpuinfo:
-                if line.startswith('Model'):
+                if line.startswith('Hardware'):
                     found = True
                     label, value = line.strip().split(':', 1)
-                    value = value.strip()
-                    if value.startswith("Raspberry Pi"):
+                    value = value.strip().upper()
+                    if value in rpi_hardware_list:
                         return True
                     elif raise_on_errors:
-                        raise ValueError('/proc/cpuinfo Model record does not start with Raspberry Pi')
+                        raise ValueError('/proc/cpuinfo Hardware record is not a Raspberry Pi')
                     else:
                         return False
 
             if not found:
                 if raise_on_errors:
-                    raise ValueError('/proc/cpuinfo did not contain a Model record')
+                    raise ValueError('/proc/cpuinfo did not contain a Hardware record')
                 else:
                     return False
     except IOError:
