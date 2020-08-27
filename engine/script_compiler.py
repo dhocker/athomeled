@@ -180,12 +180,28 @@ class ScriptCompiler:
             return False
         return True
 
+    def is_valid_int(self, t):
+        """
+        Answers the question: Is t a valid integer?
+        :param t:
+        :return: True if t is a valid integer.
+        """
+        if t is None:
+            return False
+        try:
+            v = int(t)
+        except:
+            return False
+        return True
+
     def is_valid_float(self, t):
         """
         Answers the question: Is t a valid floating point number?
         :param t:
         :return: True if t is a valid floating point number.
         """
+        if t is None:
+            return False
         try:
             v = float(t)
         except:
@@ -766,7 +782,11 @@ class ScriptCompiler:
         if len(tokens) < 2:
             self.script_error("Not enough tokens")
             return None
-        tokens[1] = int(self.resolve_define(tokens[1]))
+        brightness = self.resolve_define(tokens[1])
+        if not self.is_valid_int(brightness):
+            self.script_error("Invalid brightness value")
+            return None
+        tokens[1] = int(brightness)
         if tokens[1] < 0 or tokens[1] > 255:
             self.script_error("Invalid brightness value")
             return None
