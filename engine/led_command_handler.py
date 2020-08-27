@@ -249,7 +249,12 @@ class LEDCommandHandler:
         # Full path to script file
         # TODO Concurrency issue
         r.set_value("scriptfile", tokens[1])
-        full_path = "{0}/{1}".format(configuration.Configuration.ScriptFileDirectory(), tokens[1])
+        # Default file extension to .led
+        if tokens[1].endswith(".led"):
+           full_name = tokens[1]
+        else:
+            full_name = "{0}.led".format(tokens[1])
+        full_path = "{0}/{1}".format(configuration.Configuration.ScriptFileDirectory(), full_name)
         if not os.path.exists(full_path):
             r.set_result(LEDCommandHandler.ERROR_RESPONSE)
             r.set_value("messages", ["Script file does not exist"])
