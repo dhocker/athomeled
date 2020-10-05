@@ -1,18 +1,22 @@
-rpi-ws281x==4.2.2; platform_machine == 'armv7l'
-rpi-ws281x==4.2.2; platform_machine == 'armv8l'
-rpi-ws281x==4.2.2; platform_machine == 'armv6l'
+psutil
+ntplib
+
 -e git+https://github.com/dhocker/athomesocketserver.git#egg=athomesocketserver
 -e git+https://github.com/dhocker/athomeutils.git#egg=athomeutils
 -e git+https://github.com/dhocker/colorcycler.git#egg=colorcycler
--e git+https://github.com/dhocker/Adafruit_DotStar_Pi.git#egg=dotstar
-psutil
-ntplib
+
+#
+# Everything below this line only installs on Raspberry Pi OS
+#
+
+rpi-ws281x==4.2.4; platform_machine == 'armv6l' or platform_machine == 'armv7l' or platform_machine == 'armv8l'
+RPi.GPIO; platform_machine == 'armv6l' or platform_machine == 'armv7l' or platform_machine == 'armv8l'
+-e git+https://github.com/dhocker/Adafruit_DotStar_Pi.git#egg=dotstar ; platform_machine == 'armv6l' or platform_machine == 'armv7l' or platform_machine == 'armv8l'
 
 # CircuitPython
 -e git+https://github.com/dhocker/Adafruit_Blinka.git#egg=Adafruit_Blinka
 -e git+https://github.com/dhocker/Adafruit_CircuitPython_NeoPixel.git#egg=adafruit-circuitpython-neopixel
 adafruit-circuitpython-busdevice
-RPi.GPIO
 
 # CircuitPython_DotStarAPA102
 -e git+https://github.com/dhocker/CircuitPython_DotStarAPA102.git#egg=circuitpython-dotstarapa102
