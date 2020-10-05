@@ -38,7 +38,8 @@ If you want to
 use another LED string type you will need to write your own driver. 
 The AtHomeLED/driver/dummy_driver.py
 file provides a template for implementing a driver. The DUMMY driver can 
-be used as a mock device. This is a good solution for testing.
+be used as a mock device. This is a potential solution for testing. Another good 
+solution for testing is the [LED emulator](https://github.com/dhocker/led-emulator).
 
 ## License
 
@@ -62,13 +63,13 @@ will be supported in the future.
 A suitable execution environment would use 
 virtualenv and virtualenvwrapper to create a working virtual environment. 
 
-AtHomeLED has been tested on Raspbian Stretch.
+AtHomeLED has been tested on Raspbian Buster.
 
 ## Dependencies
 The requirements.txt file can be used with pip to create the required virtual environment with 
 some all dependencies. This includes:
 
-* rpi-ws281x
+* [rpi-ws281x](https://pypi.org/project/rpi-ws281x/)
 * [athomesocketserver](https://www.github.com/dhocker/athomesocketserver)
 * [ColorCycler](https://github.com/dhocker/colorcycler.git)
 * [AtHomeUtils](https://github.com/dhocker/athomeutils.git)
@@ -76,8 +77,8 @@ some all dependencies. This includes:
 * [Adafruit-Blinka](https://github.com/dhocker/Adafruit-Blinka)
 * [Adafruit_CircuitPython_NeoPixel](https://github.com/dhocker/Adafruit_CircuitPython_NeoPixel.git)
 * [CircuitPython_DotStarAPA102](https://github.com/dhocker/CircuitPython_DotStarAPA102)
-* adafruit-circuitpython-busdevice
-* RPi.GPIO
+* [adafruit-circuitpython-busdevice](https://pypi.org/project/adafruit-circuitpython-busdevice/)
+* [RPi.GPIO](https://pypi.org/project/RPi.GPIO/)
 
 ## Configuration <a id="configuration"></a>
 
@@ -147,7 +148,7 @@ file is to copy at_home_led.example.conf to at_home_led.conf and edit as require
     </tr>
     <tr>
       <td>AutoRun</td>
-      <td>Script file to be started when AtHomeDMX starts. The default is none.</td>
+      <td>Script file to be started when AtHomeLED starts. The default is none.</td>
     </tr>
     <tr>
       <td>WaitForClockSync</td>
@@ -466,7 +467,7 @@ The wait (time in milliseconds) value determines
 how fast the animation proceeds. The iterations value determines 
 how many times the algorithm is executed.
 
-    rainbow {r g b | color} [wait=20.0] [iterations=1]
+    rainbow [wait=20.0] [iterations=1]
     
 #### Rainbowcycle
 Draws a rainbow that uniformly distributes itself across all pixels.
@@ -474,7 +475,7 @@ The wait (time in milliseconds) value determines
 how fast the animation proceeds. The iterations value determines 
 how many times the algorithm is executed.
 
-    rainboxcycle {r g b | color} [wait=20.0] [iterations=5]
+    rainbowcycle [wait=20.0] [iterations=5]
     
 #### Theaterchaserainbow
 This is a rainbow movie theater light style chaser animation.
@@ -577,12 +578,13 @@ is equivalent to
     color77 color77-default 200.0 100
 
 #### Scrollpixels
-Starting from the first pixel, scrolls a group of 5 pixels across the strip. 
+Starting from the first pixel, scrolls a group of n pixels across the strip. 
 The wait (time in milliseconds) value determines
 how fast the animation proceeds. The iterations value determines 
-how many times the algorithm is executed.
+how many times the algorithm is executed. The n parameter sets the number
+of pixels.
 
-    scrollpixels {r g b | color} [wait=20.0] [iterations=1000]
+    scrollpixels {r g b | color} [wait=20.0] [iterations=1000] [n=5]
 
 #### Randompixels
 Sets a randomly chosen pixel to a randomly generated color.
@@ -755,3 +757,4 @@ Assuming Raspbian:
 * [NeoPixel/WS2811 Wiring including level shifter](https://learn.adafruit.com/neopixels-on-raspberry-pi/wiring)
 * [74AHCT125 level shifter](https://www.adafruit.com/product/1787)
 * [Making annoying rainbows in javascript](https://krazydad.com/tutorials/makecolors.php).
+* [LED Emulator](https://github.com/dhocker/led-emulator)
