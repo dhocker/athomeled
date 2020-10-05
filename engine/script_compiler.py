@@ -23,6 +23,8 @@ class ScriptCompiler:
     """
     Builds an executable VM
     """
+    _scrollpixels_default = 5
+
     def __init__(self, vm):
         self._last_error = None
         self._vm = vm
@@ -751,7 +753,7 @@ class ScriptCompiler:
 
     def scrollpixels_stmt(self, tokens):
         """
-        scrollpixels r g b [wait=20.0 iterations=1000]
+        scrollpixels r g b [wait=20.0 iterations=1000 n=5]
         :param tokens:
         :return:
         """
@@ -759,6 +761,9 @@ class ScriptCompiler:
             self.script_error("Not enough tokens")
             return None
         trans_tokens = self.resolve_algorithm_args(tokens, color=True, wait=20.0, iterations=1000)
+        # If the number of pixels is omitted, default to the class value for backward compatibility
+        if len(trans_tokens) < 7:
+            trans_tokens.append(self._scrollpixels_default)
         return trans_tokens
 
     def randompixels_stmt(self, tokens):

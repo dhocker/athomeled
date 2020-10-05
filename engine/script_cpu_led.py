@@ -184,17 +184,18 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
 
     def scroll_pixels(self, stmt):
         """
-        Runs 5 LEDs at a time along strip
-        scrollpixels r g b [wait=20.0] [iterations=1000]
+        Runs n LEDs at a time along strip
+        scrollpixels r g b [wait=20.0] [iterations=1000] [n=5]
         :param stmt:
         :return:
         """
         color = self._leddev.color(stmt[1], stmt[2], stmt[3])
         wait_ms = float(stmt[4]) / 1000.0
         iterations = int(float(stmt[5]))
+        n = int(stmt[6])
 
         head = 0    # Index of first 'on' pixel
-        tail = -5   # Index of last 'off' pixel
+        tail = -n   # Index of last 'off' pixel - sets the length of pixel string
 
         for i in range(iterations):  # Loop for number of iterations
             if self._terminate_event.isSet():
