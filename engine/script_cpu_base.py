@@ -179,6 +179,7 @@ class ScriptCPUBase:
                 self._do_for_n_count.pop()
                 next_stmt = self._stmt_index + 1
             else:
+                logger.debug("Do-For-N %d", self._do_for_n_count[self._do_for_n_active])
                 # Loop back to top of script block
                 next_stmt = self._do_for_n_stmt[self._do_for_n_active] + 1
         else:
