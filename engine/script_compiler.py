@@ -369,7 +369,7 @@ class ScriptCompiler:
             return None
 
         try:
-            v = eval(rm.group(3), self._vm.evals)
+            v = eval(rm.group(3), self._vm.evals, self._vm.colors)
             self._vm.evals[rm.group(2)] = v
         except Exception as ex:
             self.script_error(str(ex))
