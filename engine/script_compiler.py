@@ -604,18 +604,32 @@ class ScriptCompiler:
 
     def color_stmt(self, tokens):
         """
-        color name r g b where r, g, b values are 0-255
+        color name [r g b | [0x]rrggbb] where r, g, b values are 0-255 and rr, gg, bb are hex 0-FF
         :param tokens:
         :return:
         """
-        if len(tokens) < 5:
-            self.script_error("Not enough tokens")
-            return None
-        if self.are_valid_colors(tokens[2:]):
-            self.add_color(tokens[1], tokens[2:])
+        if len(tokens) == 3:
+            # color name [0x]rrggbb
+            rgb = tokens[2]
+            if not (rgb.startswith("0x") or rgb.startswith("0X")):
+                rgb = "0x" + rgb
+            intrgb = int(rgb, base=16)
+            cv = [0, 0, 0]
+            for i in range(2, -1, -1):
+                cv[i] = intrgb & 0xFF
+                intrgb = intrgb >> 8
+            self.add_color(tokens[1], cv)
+        elif len(tokens) == 5:
+            # color name r g b
+            if self.are_valid_colors(tokens[2:]):
+                self.add_color(tokens[1], tokens[2:])
+            else:
+                self.script_error("Color values must be 0-255")
+                return None
         else:
-            self.script_error("Color values must be 0-255")
+            self.script_error("Wrong number of tokens.")
             return None
+
         return []
 
     def colorwipe_stmt(self, tokens):
