@@ -705,7 +705,7 @@ class ScriptCompiler:
         # From color
         r = self.resolve_color_arg(tokens, token_index)
         # r is a tuple (number-tokens-consumed, [r, g, b])
-        if r in None:
+        if r is None:
             return None
         trans_tokens.extend(r[1])
         token_index += r[0]
