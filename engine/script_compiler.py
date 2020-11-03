@@ -108,7 +108,14 @@ class ScriptCompiler:
             self._line_number[self._file_depth] += 1
             # case insensitive tokenization
             tokens = stmt.lower().split()
-            valid = self.compile_statement(stmt, tokens)
+
+            # Catch unhandled exceptions
+            try:
+                valid = self.compile_statement(stmt, tokens)
+            except Exception as ex:
+                self.script_error(str(ex))
+                return False
+
             stmt = sf.readline()
 
         # TODO Validate that all script blocks are closed
@@ -247,10 +254,32 @@ class ScriptCompiler:
             return (1, self._vm.colors[tokens[index]])
 
         # Then, assume r, g, b color values. Each value can be a defined value or literal value.
-        r = int(self.resolve_define(tokens[index]))
-        g = int(self.resolve_define(tokens[index + 1]))
-        b = int(self.resolve_define(tokens[index + 2]))
-        return (3, [r, g, b])
+        r = self.validate_color_value(tokens[index])
+        if r is not None:
+            g = self.validate_color_value(tokens[index + 1])
+            if g is not None:
+                b = self.validate_color_value(tokens[index + 2])
+                if b is not None:
+                    return (3, [r, g, b])
+        # One of the rgb values was invalid
+        return None
+
+    def validate_color_value(self, v):
+        """
+        Validate a color value (r, g, b)
+        @param v: A named, defined color or a color value that can be converted to int
+        @return: A color value or None
+        """
+        cv = self.resolve_define(v)
+        if cv is None:
+            self.script_error("Invalid/undefined color argument: {0}".format(v))
+            return None
+        try:
+            cv = int(cv)
+        except Exception as ex:
+            self.script_error(str(ex))
+            return None
+        return cv
 
     def resolve_wait_arg(self, tokens, index, default=None):
         """
@@ -296,6 +325,8 @@ class ScriptCompiler:
         if color:
             r = self.resolve_color_arg(message_tokens, wait_index)
             # r is a tuple (number-tokens-consumed, [r, g, b])
+            if r is None:
+                return None
             trans_tokens.extend(r[1])
             wait_index += r[0]
 
@@ -674,12 +705,16 @@ class ScriptCompiler:
         # From color
         r = self.resolve_color_arg(tokens, token_index)
         # r is a tuple (number-tokens-consumed, [r, g, b])
+        if r in None:
+            return None
         trans_tokens.extend(r[1])
         token_index += r[0]
 
         # To color
         r = self.resolve_color_arg(tokens, token_index)
         # r is a tuple (number-tokens-consumed, [r, g, b])
+        if r is None:
+            return None
         trans_tokens.extend(r[1])
         token_index += r[0]
 
@@ -828,12 +863,16 @@ class ScriptCompiler:
         # color 1
         r = self.resolve_color_arg(tokens, token_index)
         # r is a tuple (number-tokens-consumed, [r, g, b])
+        if r is None:
+            return None
         trans_tokens.extend(r[1])
         token_index += r[0]
 
         # color 2
         r = self.resolve_color_arg(tokens, token_index)
         # r is a tuple (number-tokens-consumed, [r, g, b])
+        if r is None:
+            return None
         trans_tokens.extend(r[1])
         token_index += r[0]
 

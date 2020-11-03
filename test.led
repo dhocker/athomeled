@@ -16,7 +16,10 @@
 color red FF0000
 color green 0x00FF00
 color blue 0000FF
-eval color77halloween [(232,44,12),(227,11,227),(232,44,12),(227,11,227),(232,44,12),(227,11,227),(232,44,12)]
+color orange 232 44 12
+
+# eval orange (232,44,12)
+eval color77halloween [orange,(227,11,227),(232,44,12),(227,11,227),(232,44,12),(227,11,227),(232,44,12)]
 
 define wait1 50.0
 define qtr-bright 63
@@ -32,7 +35,7 @@ define chase-wait 100.0
 ## This will run the program every day at hh:mm:ss (24 hour clock)
 #Do-At 14:31:00
 do-for 00:01:00
-    #color77 color77halloween 200.0 100
+    color77 color77halloween 200.0 100
     do-for-n do-count
         do-for 00:00:01
             pause 00:00:01
@@ -55,6 +58,9 @@ do-for 00:01:00
     theaterchaserainbow chase-wait
     scrollpixels green 21.0 999
     randompixels 22.0 501
+
+    colorwipe undefinedcolor wait1
+
     reset
 
     brightness half-bright
