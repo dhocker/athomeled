@@ -106,6 +106,11 @@ class ScriptCompiler:
         while stmt and valid:
             self._stmt = stmt
             self._line_number[self._file_depth] += 1
+
+            # Remove line end comment
+            comment_start = stmt.find("#")
+            if comment_start >= 0:
+                stmt = stmt[ : comment_start]
             # case insensitive tokenization
             tokens = stmt.lower().split()
 

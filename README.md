@@ -262,7 +262,7 @@ A script file contains any number of statements.
 * Each line is a statement.
 * Leading and trailing blanks are ignored.
 * Blank lines are ignored.
-* Lines that begin with a # are ignored.
+* Everything after a # is ignored.
 * Everything is case insensitive.
 
 ## Statements
@@ -297,11 +297,12 @@ cannot contain blanks. A name can contain any alpha-numeric or special character
 Single or double quotes have no special significance. 
 
 ### Comment
-Any line whose first non-blank character is a # is a comment. Comments are ignored.
+Everything after a # is a comment. Comments are ignored.
 
-    # This is a comment
+    # This is a whole line comment
+    define time 25 # This is an end-of-line comment
 
-Comments are not recognized as such when placed at the end of an otherwise valid statement.
+An end-of-line comment can appear at the end of any statement.
 
 ### Define
 A define statement defines a general use numeric value. 
