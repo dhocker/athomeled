@@ -909,6 +909,9 @@ class ScriptCompiler:
             # The first arg MUST be a color-list
             cl = self.resolve_eval(tokens[1])
             if cl:
+                if len(cl) != 7:
+                    self.script_error("Color-list eval must contain 7 colors: " + tokens[1])
+                    return None
                 trans_tokens.append(cl)
             else:
                 self.script_error("Undefined color-list eval: " + tokens[1])
