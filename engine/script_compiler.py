@@ -230,10 +230,11 @@ class ScriptCompiler:
         """
         if token in self._vm.defines:
             return self._vm.defines[token]
-        elif self.is_valid_float(token):
+        if token in self._vm.evals and isinstance(self._vm.evals[token], (int, float)):
+            return float(self._vm.evals[token])
+        if self.is_valid_float(token):
             return float(token)
-        else:
-            return None
+        return None
 
     def resolve_eval(self, token):
         """

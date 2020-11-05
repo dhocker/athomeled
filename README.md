@@ -328,6 +328,13 @@ For example, here is the default color-list definition.
 
 defines the color-list named value as a list of 7 color 3-tuples.
 
+A named eval statement that evaluates to an integer or float can be used anywhere a 
+named define statement can be used. The following two statements are functionally
+equivalent.
+
+    define value1 42.0
+    eval value1 42.0
+
 ### Import
 The import statement includes another file into the script file. This works like a C/C++ include or a Python import
 statement. The content of the imported file is inserted into the script in line. There is no duplicate import

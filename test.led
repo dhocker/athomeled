@@ -22,13 +22,15 @@ color orange 232 44 12
 eval color77halloween [orange,(227,11,227),(232,44,12),(227,11,227),(232,44,12),(227,11,227),(232,44,12)]
 
 define wait1 50.0
-define qtr-bright 63
+eval qtr_bright 63.0
 define half-bright 127
 define max-bright 255
 
 define do-count 2
 
 define chase-wait 100.0
+
+brightness qtr_bright
 
 # Main do loop
 # The main do loop runs until the app is terminated.
@@ -48,7 +50,7 @@ do-for 00:01:00 # For 1 minute
     sinewave
     sinewave 33 444 63 64
 
-    brightness qtr-bright
+    brightness qtr_bright
     colorwipe red wait1
     colorwipe green wait1
     colorwipe blue wait1
