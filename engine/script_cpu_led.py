@@ -47,6 +47,7 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
             "rainbowcycle": self.rainbowCycle,
             "colorwipe": self.colorwipe_stmt,
             "theaterchase": self.theaterChase,
+            "theaterchase2": self.theater_chase2,
             "theaterchaserainbow": self.theaterChaseRainbow,
             "scrollpixels": self.scroll_pixels,
             "randompixels": self.random_pixels,
@@ -141,6 +142,46 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
                 while i < self._leddev.numPixels():
                     self._leddev.setPixelColor(i, color)
                     i += span
+
+                self._leddev.show()
+                time.sleep(wait_ms/1000.0)
+
+                i = q
+                while i < self._leddev.numPixels():
+                    self._leddev.setPixelColor(i, 0)
+                    i += span
+
+        return self._stmt_index + 1
+
+    def theater_chase2(self, stmt):
+        """
+        Movie theater light style chaser animation using 2 colors.
+        theaterchase r g b [wait iterations]
+        """
+        colors = [
+            self._leddev.color(stmt[1], stmt[2], stmt[3]),
+            self._leddev.color(stmt[4], stmt[5], stmt[6])
+        ]
+        wait_ms = 50.0
+        iterations = 10
+        span = 6
+        c1 = 0
+        if len(stmt) > 7:
+            wait_ms = stmt[7]
+            iterations = int(stmt[8])
+        for j in range(iterations):
+            # Alternate the first color
+            c1 = (c1 + 1) % 2
+            c = c1
+            if self._terminate_event.isSet():
+                break
+            for q in range(span):
+                i = q
+                while i < self._leddev.numPixels():
+                    self._leddev.setPixelColor(i, colors[c])
+                    i += span
+                # Cycle the color
+                c = (c + 1) % 2
 
                 self._leddev.show()
                 time.sleep(wait_ms/1000.0)

@@ -469,6 +469,15 @@ how many times the algorithm is executed.
 
     theaterchase {r g b | color} [wait=50.0] [iterations=10]
     
+#### Theaterchase2
+Movie theater light style chaser animation using 2 colors.
+Fills the LED strip from first to last pixel alternating the color. 
+The wait (time in milliseconds) value determines
+how fast the chase proceeds. The iterations value determines 
+how many times the algorithm is executed.
+
+    theaterchase2 {r g b | color} {r g b | color} [wait=50.0] [iterations=10]
+    
 #### Rainbow
 Draw a rainbow that fades across all pixels at once. 
 The wait (time in milliseconds) value determines

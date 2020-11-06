@@ -63,6 +63,7 @@ class ScriptCompiler:
             "rainbowcycle": self.rainbowcycle_stmt,
             "colorwipe": self.colorwipe_stmt,
             "theaterchase": self.theaterchase_stmt,
+            "theaterchase2": self.theaterchase2_stmt,
             "theaterchaserainbow": self.theaterchaserainbow_stmt,
             "scrollpixels": self.scrollpixels_stmt,
             "randompixels": self.randompixels_stmt,
@@ -772,6 +773,48 @@ class ScriptCompiler:
         trans_tokens = self.resolve_algorithm_args(tokens, color=True, wait=50.0, iterations=10)
         return trans_tokens
 
+    def theaterchase2_stmt(self, tokens):
+        """
+        theaterchase2 r g b r g b [wait=50.0] [iterations=10]
+        The wait value is the time between iterations
+        :param tokens:
+        :return:
+        """
+        if len(tokens) < 3:
+            self.script_error("Not enough tokens")
+            return None
+
+        trans_tokens = [tokens[0]]
+        token_index = 1 # Initially the first arg after the command
+
+        # color 1
+        r = self.resolve_color_arg(tokens, token_index)
+        # r is a tuple (number-tokens-consumed, [r, g, b])
+        if r is None:
+            return None
+        trans_tokens.extend(r[1])
+        token_index += r[0]
+
+        # color 2
+        r = self.resolve_color_arg(tokens, token_index)
+        # r is a tuple (number-tokens-consumed, [r, g, b])
+        if r is None:
+            return None
+        trans_tokens.extend(r[1])
+        token_index += r[0]
+
+        # Resolve wait
+        r = self.resolve_wait_arg(tokens, token_index, default=50.0)
+        trans_tokens.append(r[1])
+        token_index += r[0]
+
+        # Resolve iterations
+        r = self.resolve_iterations_arg(tokens, token_index, default=10)
+        trans_tokens.append(r[1])
+        token_index += r[0]
+
+        return trans_tokens
+
     def theaterchaserainbow_stmt(self, tokens):
         """
         theaterchaserainbow [wait=50.0]
@@ -888,7 +931,7 @@ class ScriptCompiler:
         token_index += r[0]
 
         # Resolve iterations
-        r = self.resolve_wait_arg(tokens, token_index, default=100)
+        r = self.resolve_iterations_arg(tokens, token_index, default=100)
         trans_tokens.append(r[1])
         token_index += r[0]
 
