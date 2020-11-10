@@ -1,5 +1,5 @@
 # AtHomeLED - LED Light Strip Server
-Copyright © 2016, 2019 by Dave Hocker
+Copyright © 2016, 2020 by Dave Hocker
 
 ## Overview
 The AtHomeLED server is designed to run simple LED strip light shows on
@@ -432,6 +432,32 @@ The do-forever-end statement is the foot of the do-forever loop. When the statem
 statement to the statement following the corresponding do-forever statement.
 
     do-forever-end
+
+### Select-one and select-one-end
+These two statements are used to randomly execute one statement from a list
+of statements.
+
+    select-one
+        solidcolor red
+        solidcolor green
+        solidcolor blue
+        solidcolor orange
+        solidcolor purple
+        solidcolor brown
+    select-one-end
+
+If you are familiar with programming languages, this is a bit like a case
+statement. On each execution of the select-one statement, one of the statements
+in the list is executed.
+
+The following statements are not supported within the list.
+
+* Any form of Do statement
+* Define
+* Color
+* Eval
+* Import
+
 
 ### Pause
 Pause suspends the execution of the script for the specified amount of time.

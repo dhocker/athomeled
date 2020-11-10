@@ -1,0 +1,41 @@
+#
+# LED test script
+#
+# Notes
+#   All keywords, names are case insensitive.
+#   The script starts with the initialization/setup phase
+#   which includes all of the statements up to the
+#   loop statement.
+#
+
+# Test of import. Brings in definitions used below
+# import definitions.led
+
+color red 255 0 0
+color green 0 255 0
+color blue 0 0 255
+color orange 232 44 12
+color purple 227 11 227
+color brown 189 93 0
+
+define wait1 50.0
+define eighth-bright 32
+define qtr-bright 63
+define half-bright 127
+define max-bright 255
+
+brightness eighth-bright
+
+do-for 00:05:00 # For 5 min
+    select-one
+        solidcolor red
+        solidcolor green
+        solidcolor blue
+        solidcolor orange
+        solidcolor purple
+        solidcolor brown
+    select-one-end
+do-for-end
+
+# If there is no loop statement, the script ends when there
+# are no more statements.

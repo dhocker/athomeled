@@ -1,6 +1,6 @@
 #
 # AtHomeLED - LED script engine
-# Copyright (C) 2016  Dave Hocker
+# Copyright © 2016, 2020  Dave Hocker
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -39,6 +39,8 @@ class ScriptCompiler:
         self._do_at = False
         self._do_until = False
         self._do_forever = False
+        # Index of current select stmt
+        self._select_one = -1
 
         # Valid statements and their handlers
         self._valid_stmts = {
@@ -73,6 +75,8 @@ class ScriptCompiler:
             "colorfade": self.colorfade_stmt,
             "twocolor": self.twocolor_stmt,
             "color77": self.color77_stmt,
+            "select-one": self.select_one,
+            "select-one-end": self.select_one_end,
         }
 
     @property
@@ -467,6 +471,9 @@ class ScriptCompiler:
         if len(tokens) < 2:
             self.script_error("Missing statement argument")
             return None
+        if self._select_one >= 0:
+            self.script_error("Cannot be used inside a select-one statement")
+            return None
 
         # Translate/validate iterations
         try:
@@ -499,6 +506,9 @@ class ScriptCompiler:
         """
         if len(tokens) < 2:
             self.script_error("Missing statement argument")
+            return None
+        if self._select_one >= 0:
+            self.script_error("Cannot be used inside a select-one statement")
             return None
 
         # Translate/validate duration
@@ -536,6 +546,9 @@ class ScriptCompiler:
         if self._do_at:
             self.script_error("Only one Do-At statement is allowed")
             return None
+        if self._select_one >= 0:
+            self.script_error("Cannot be used inside a select-one statement")
+            return None
 
         # Translate/validate start time
         try:
@@ -571,6 +584,9 @@ class ScriptCompiler:
         if self._do_until:
             self.script_error("Only one Do-Until statement is allowed")
             return None
+        if self._select_one >= 0:
+            self.script_error("Cannot be used inside a select-one statement")
+            return None
 
         # Translate/validate until time
         try:
@@ -598,6 +614,9 @@ class ScriptCompiler:
         """
         Marks the beginning of a do-forever block.
         """
+        if self._select_one >= 0:
+            self.script_error("Cannot be used inside a select-one statement")
+            return None
         if self._do_forever:
             self.script_error("Only one Do-Forever statement is allowed")
             return None
@@ -613,6 +632,39 @@ class ScriptCompiler:
         if not self._do_forever:
             self.script_error("No matching Do-Forever is open")
             return None
+        return tokens
+
+    def select_one(self, tokens):
+        """
+        Begins a block of statements that will be executed randomly
+        :param tokens: Only the command token.
+        :return:
+        """
+        if len(tokens) > 1:
+            self.script_error("Too many statement arguments")
+            return None
+        if self._select_one >= 0:
+            self.script_error("select-one cannot be nested")
+            return None
+
+        # Remember active statement
+        self._select_one = len(self._vm.stmts)
+        return tokens
+
+    def select_one_end(self, tokens):
+        """
+        Marks the end/foot of a block of statements started with a select-one.
+        :param tokens:
+        :return:
+        """
+        if self._select_one < 0:
+            self.script_error("No matching select-one is open")
+            return None
+
+        # Update select-one stmt to point to end
+        self._vm.stmts[self._select_one].append(len(self._vm.stmts))
+        self._select_one = -1
+
         return tokens
 
     def pause_stmt(self, tokens):

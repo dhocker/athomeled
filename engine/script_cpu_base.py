@@ -1,6 +1,6 @@
 #
 # AtHomeLED - LED script engine
-# Copyright (C) 2016  Dave Hocker
+# Copyright © 2016, 2020  Dave Hocker
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
 import time
 import datetime
 import logging
+import random
 
 logger = logging.getLogger("led")
 
@@ -52,6 +53,8 @@ class ScriptCPUBase:
         # Do-forever control
         self._do_forever_stmt = -1
 
+        random.seed()
+
         # Valid statements and their handlers
         self._valid_stmts = {
             "color": None,
@@ -68,6 +71,8 @@ class ScriptCPUBase:
             "do-until-end": self.do_until_end_stmt,
             "do-forever": self.do_forever_stmt,
             "do-forever-end": self.do_forever_end_stmt,
+            "select-one": self.select_one_stmt,
+            "select-one-end": self.select_one_end_stmt,
             "pause": self.pause_stmt,
             "reset": self.reset_stmt,
         }
@@ -87,8 +92,7 @@ class ScriptCPUBase:
             # Ignore statements with no handler
             if self._valid_stmts[stmt[0]] is not None:
                 # The statement execution sets the next statement index
-                logger.debug(stmt)
-                next_index = self._valid_stmts[stmt[0]](stmt)
+                next_index = self._execute_stmt(stmt)
                 # If the statement threw an exception end the script
                 if next_index < 0:
                     logger.error("Virtual CPU stopped due to error")
@@ -118,6 +122,16 @@ class ScriptCPUBase:
         logger.info("Virtual CPU stopped")
         self._reset()
         return next_index > 0
+
+    def _execute_stmt(self, stmt):
+        """
+        Execute a script statement
+        @param stmt: A list of the statements tokens.
+        @return: Returns the next statement index.
+        """
+        logger.debug(stmt)
+        next_index = self._valid_stmts[stmt[0]](stmt)
+        return next_index
 
     def _reset(self):
         """
@@ -374,6 +388,36 @@ class ScriptCPUBase:
         Foot of the the do-forever block
         """
         return self._do_forever_stmt
+
+    def select_one_stmt(self, stmt):
+        """
+        Randomly execute one statement from a list of statements.
+        Token[1] is the index of the select_one_end statement and
+        token[1] - _stmt_index is the number of statements in the list.
+        @param stmt:
+        @return:
+        """
+        # Randomly select a statement from the list
+        number_stmts = stmt[1] - self._stmt_index - 1
+        rindex = random.randint(0, number_stmts - 1)
+        logger.debug("select-one: %d", rindex)
+
+        # Execute the selected statement
+        selected_stmt = self._vm.stmts[self._stmt_index + 1 + rindex]
+        # The next statement return value is ignored as it is only produced
+        # by statements that are not supported within a select-one block.
+        next_index = self._execute_stmt(selected_stmt)
+
+        # The next statement is the select-one-end statement
+        return stmt[1]
+
+    def select_one_end_stmt(self, stmt):
+        """
+        Foot of a select-one block. Basically a no-op and place holder.
+        @param stmt:
+        @return:
+        """
+        return self._stmt_index + 1
 
     def pause_stmt(self, stmt):
         """
