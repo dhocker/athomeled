@@ -16,6 +16,7 @@
 import datetime
 import logging
 import re
+import webcolors
 
 logger = logging.getLogger("led")
 
@@ -170,6 +171,15 @@ class ScriptCompiler:
 
         return valid
 
+    @staticmethod
+    def _translate_web_color(token):
+        try:
+            rgb = webcolors.name_to_rgb(token)
+            return list(rgb)
+        except Exception:
+            pass
+        return None
+
     def add_color(self, name, color_values):
         """
         Adds a color to the color dictionary.
@@ -263,6 +273,10 @@ class ScriptCompiler:
         # Look for defined color first
         if tokens[index] in self._vm.colors:
             return (1, self._vm.colors[tokens[index]])
+        # Or a web color
+        rgb_list = ScriptCompiler._translate_web_color(tokens[index])
+        if rgb_list:
+            return (1, rgb_list)
 
         # Then, assume r, g, b color values. Each value can be a defined value or literal value.
         r = self.validate_color_value(tokens[index])
@@ -695,10 +709,17 @@ class ScriptCompiler:
     def color_stmt(self, tokens):
         """
         color name [r g b | [0x]rrggbb] where r, g, b values are 0-255 and rr, gg, bb are hex 0-FF
+        https://www.w3schools.com/colors/colors_names.asp
         :param tokens:
         :return:
         """
         if len(tokens) == 3:
+            # color name webcolor-name
+            rgb_list = ScriptCompiler._translate_web_color(tokens[2])
+            if rgb_list:
+                self.add_color(tokens[1], rgb_list)
+                return []
+
             # color name [0x]rrggbb
             rgb = tokens[2]
             if not (rgb.startswith("0x") or rgb.startswith("0X")):

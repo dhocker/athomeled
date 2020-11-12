@@ -313,7 +313,19 @@ A valid define value is an integer or floating point number. For example, 10.0 o
 ### Color
 Use the color statement to define an RGB color.
 
-    color name red green blue
+    color name {red green blue | web-color | 0xrrggbb | rrggbb}
+
+where:
+
+* red green blue is an integer tuple.
+* web-color is a [named web color](https://www.w3schools.com/colors/colors_names.asp)
+* rrggbb is a 6 digit hex color
+
+### Web Colors
+In addition to colors defined via the color statement, 
+all of the 
+[named web colors](https://www.w3schools.com/colors/colors_names.asp) 
+are available for use anywhere a color is required. 
 
 ### Eval
 Use the eval statement to define a named value where the value is a Python expression.
@@ -801,3 +813,4 @@ Assuming Raspbian:
 * [74AHCT125 level shifter](https://www.adafruit.com/product/1787)
 * [Making annoying rainbows in javascript](https://krazydad.com/tutorials/makecolors.php).
 * [LED Emulator](https://github.com/dhocker/led-emulator)
+* [Web colors](https://www.w3schools.com/colors/colors_names.asp)

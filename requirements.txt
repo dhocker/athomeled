@@ -1,5 +1,6 @@
 psutil
 ntplib
+webcolors
 
 -e git+https://github.com/dhocker/athomesocketserver.git#egg=athomesocketserver
 -e git+https://github.com/dhocker/athomeutils.git#egg=athomeutils
