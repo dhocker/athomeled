@@ -151,6 +151,9 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
                     self._leddev.setPixelColor(i, 0)
                     i += span
 
+        # Clear the last set of pixels
+        self._leddev.show()
+
         return self._stmt_index + 1
 
     def theater_chase2(self, stmt):
@@ -191,6 +194,9 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
                     self._leddev.setPixelColor(i, 0)
                     i += span
 
+        # Clear the last set of pixels
+        self._leddev.show()
+
         return self._stmt_index + 1
 
     def theaterChaseRainbow(self, stmt):
@@ -217,6 +223,10 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
                 while i < self._leddev.numPixels():
                     self._leddev.setPixelColor(i, 0)
                     i += span
+
+        # Clear the last set of pixels
+        self._leddev.show()
+
         return self._stmt_index + 1
 
     #
