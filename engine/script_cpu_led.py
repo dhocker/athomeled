@@ -255,7 +255,7 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
             self._leddev.setPixelColor(head, color)  # Turn on 'head' pixel
             if tail >= 0:
                 self._leddev.setPixelColor(tail, 0)  # Turn off 'tail'
-                self._leddev.show()  # Refresh strip
+            self._leddev.show()  # Refresh strip
             time.sleep(wait_ms)  # Pause for delay time
 
             head += 1  # Advance head position
