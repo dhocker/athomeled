@@ -80,6 +80,13 @@ class ScriptCompiler:
             "select-one-end": self.select_one_end,
         }
 
+        # Add all of the web colors as defined colors
+        # This makes them accessible by all commands
+        for wcname in webcolors.CSS3_NAMES_TO_HEX:
+            wc = webcolors.CSS3_NAMES_TO_HEX[wcname][1:]
+            self.color_stmt(["color", wcname, wc])
+        logger.debug("%d web colors", len(self._vm.colors))
+
     @property
     def last_error(self):
         """

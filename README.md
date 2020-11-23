@@ -347,6 +347,9 @@ equivalent.
     define value1 42.0
     eval value1 42.0
 
+Note that colors defined via the color statement and web colors can
+be used in an eval statement.
+
 ### Import
 The import statement includes another file into the script file. This works like a C/C++ include or a Python import
 statement. The content of the imported file is inserted into the script in line. There is no duplicate import
