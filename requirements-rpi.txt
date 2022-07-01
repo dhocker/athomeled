@@ -6,7 +6,7 @@
 # Everything below this line only installs on Raspberry Pi OS
 #
 
-rpi-ws281x==4.2.4; platform_machine == 'armv6l' or platform_machine == 'armv7l' or platform_machine == 'armv8l'
+rpi-ws281x==4.3.4; platform_machine == 'armv6l' or platform_machine == 'armv7l' or platform_machine == 'armv8l'
 RPi.GPIO; platform_machine == 'armv6l' or platform_machine == 'armv7l' or platform_machine == 'armv8l'
 -e git+https://github.com/dhocker/Adafruit_DotStar_Pi.git#egg=dotstar ; platform_machine == 'armv6l' or platform_machine == 'armv7l' or platform_machine == 'armv8l'
 
