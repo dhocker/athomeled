@@ -66,6 +66,7 @@ class ScriptCompiler:
             "rainbowcycle": self.rainbowcycle_stmt,
             "colorwipe": self.colorwipe_stmt,
             "theaterchase": self.theaterchase_stmt,
+            "runwaychase": self.runwaychase_stmt,
             "theaterchase2": self.theaterchase2_stmt,
             "theaterchaserainbow": self.theaterchaserainbow_stmt,
             "scrollpixels": self.scrollpixels_stmt,
@@ -277,10 +278,17 @@ class ScriptCompiler:
         :param index: First token index for color
         :return: tuple = (number_tokens_consumed, [r, g, b])
         """
-        # Look for defined color first
+        # Look for an eval that is a 3-tuple color
+        if tokens[index] in self._vm.evals:
+            c = self._vm.evals[tokens[index]]
+            if type(c) is tuple and len(c) == 3:
+                return 1, list(c)
+
+        # Then, look for a defined color (which includes web colors)
         if tokens[index] in self._vm.colors:
-            return (1, self._vm.colors[tokens[index]])
-        # Or a web color
+            return 1, self._vm.colors[tokens[index]]
+
+        # Finally, look for a web color
         rgb_list = ScriptCompiler._translate_web_color(tokens[index])
         if rgb_list:
             return (1, rgb_list)
@@ -844,6 +852,18 @@ class ScriptCompiler:
     def theaterchase_stmt(self, tokens):
         """
         theaterchase r g b [wait=50.0 iterations=10]
+        :param tokens:
+        :return:
+        """
+        if len(tokens) < 2:
+            self.script_error("Not enough tokens")
+            return None
+        trans_tokens = self.resolve_algorithm_args(tokens, color=True, wait=50.0, iterations=10)
+        return trans_tokens
+
+    def runwaychase_stmt(self, tokens):
+        """
+        runwaychase r g b [wait=50.0 iterations=10]
         :param tokens:
         :return:
         """

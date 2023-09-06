@@ -23,7 +23,7 @@ Using the remote control interface you can:
 * stop the currently running script file
 * view the status of the AtHomeLED server
 
-There are several different kinds of LED strips depending on which 
+There are several kinds of LED strips depending on which 
 controller string is used. AtHomeLED supports the following.
 
 * WS2811 (3-wire PWM protocol) based LED strips/strings (e.g. Adafruit NeoPixels)
@@ -321,11 +321,14 @@ where:
 * web-color is a [named web color](https://www.w3schools.com/colors/colors_names.asp)
 * rrggbb is a 6 digit hex color
 
+Note that a color name defined by a color statement will override a web color of the same name.
+
 ### Web Colors
 In addition to colors defined via the color statement, 
 all of the 
 [named web colors](https://www.w3schools.com/colors/colors_names.asp) 
-are available for use anywhere a color is required. 
+are available for use anywhere a color is required. Consider web colors to be the
+initial set of defined colors.
 
 ### Eval
 Use the eval statement to define a named value where the value is a Python expression.
@@ -349,6 +352,12 @@ equivalent.
 
 Note that colors defined via the color statement and web colors can
 be used in an eval statement.
+
+### Order of Precedence
+
+1. eval
+2. color
+3. web color
 
 ### Import
 The import statement includes another file into the script file. This works like a C/C++ include or a Python import
@@ -518,6 +527,15 @@ how fast the chase proceeds. The iterations value determines
 how many times the algorithm is executed.
 
     theaterchase2 {r g b | color} {r g b | color} [wait=50.0] [iterations=10]
+    
+#### Runwaychase
+Airport runway style chaser animation.
+Chases a single pixel from first to last pixel in 1 second. 
+The wait (time in milliseconds) value determines
+how long the algorthm waits after reaching the last pixel. 
+The iterations value determines how many times the chase is repeated.
+
+    runwaychase {r g b | color} [wait=50.0] [iterations=10]
     
 #### Rainbow
 Draw a rainbow that fades across all pixels at once. 

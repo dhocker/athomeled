@@ -47,6 +47,7 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
             "rainbowcycle": self.rainbowCycle,
             "colorwipe": self.colorwipe_stmt,
             "theaterchase": self.theaterChase,
+            "runwaychase": self.runway_chase,
             "theaterchase2": self.theater_chase2,
             "theaterchaserainbow": self.theaterChaseRainbow,
             "scrollpixels": self.scroll_pixels,
@@ -153,6 +154,47 @@ class ScriptCPULED(script_cpu_base.ScriptCPUBase):
 
         # Clear the last set of pixels
         self._leddev.show()
+
+        return self._stmt_index + 1
+
+    def runway_chase(self, stmt):
+        """
+        Airport runway style chaser animation.
+        runwaychase r g b [transit-time iterations]
+        """
+        color = self._leddev.color(stmt[1], stmt[2], stmt[3])
+        # This is the runway length in "time"
+        transit_time = 1000.0
+        iterations = 10
+        if len(stmt) > 4:
+            transit_time = stmt[4]
+            iterations = int(stmt[5])
+        background_color = self._leddev.color(0, 0, 0)
+
+        # This is the per pass step time
+        wait_ms = transit_time / 1000.0
+
+        for j in range(iterations):
+            if self._terminate_event.is_set():
+                break
+            for px in range(self._leddev.numPixels()):
+                if self._terminate_event.is_set():
+                    break
+                # Clear previous pixel
+                if px == 0:
+                    self._leddev.setPixelColor(self._leddev.numPixels() - 1, background_color)
+                if px > 0:
+                    self._leddev.setPixelColor(px - 1, background_color)
+                # Set the next pixel
+                self._leddev.setPixelColor(px, color)
+                self._leddev.show()
+                time.sleep(wait_ms)
+
+            # TODO This needs to be a fixed time
+            time.sleep(0.25)
+
+        # Clear the last set of pixels
+        self._leddev.clear()
 
         return self._stmt_index + 1
 
