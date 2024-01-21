@@ -82,8 +82,16 @@ some all dependencies. This includes:
 
 ## Configuration <a id="configuration"></a>
 
-AtHomeLED is setup using the JSON formatted **at_home_led.conf** file. The easiest way to create a configuration
-file is to copy at_home_led.example.conf to at_home_led.conf and edit as required.
+AtHomeLED is setup using a JSON formatted configuration file. The easiest way to create a configuration
+file is to start with at\_home\_led.example.conf and edit as required.
+
+When AtHomeLED starts, it looks for a configuration file as follows:
+
+* at\_home\_led.conf
+* conf/at\_home\_led_hostname.conf
+* conf/at\_home\_led\_default.conf
+
+### Configuration File Organization
 
 <table>
   <tbody>

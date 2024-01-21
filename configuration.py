@@ -212,15 +212,41 @@ class Configuration():
     @classmethod
     def GetConfigurationFilePath(cls):
         """
-        Returns the full path to the configuration file
-        """
-        file_name = 'at_home_led.conf'
+        Returns the full path to the configuration file.
+        The intention is to keep all LED controller configurations in the
+        conf folder. Each configuration file is named with the hostname where
+        it is intended to be used. However, we allow a configuration file in the
+        home directory (the local configuration file) to override the hostname
+        configuration file. This allows the local configuration file to be used for
+        testing. If a controller's conf file is not found in
+        the root conf folder, we'll look in the conf folder for a hostname
+        specific configuration file. If there is no hostname configuration file
+        we'll look for the default configuration file.
 
-        # A local configuration file (in the home directory) takes precedent
+        In summary, the order of precedence for the configuration file is:
+        at_home_led.conf
+        conf/at_home_led_hostname.conf
+        conf/at_home_led_default.conf
+
+        :return: full path to the configuration file.
+        """
+
+        # First, look for the local configuration file (in the home directory)
+        file_name = "at_home_led.conf"
         if os.path.exists(file_name):
             return file_name
 
-        if Configuration.IsLinux():
-            return "/etc/{0}".format(file_name)
+        # Next, look for a host specific conf file
+        hostname = os.uname()[1]
+        hostname = hostname.split('.')[0]  # only the first token of the hostname
+        file_name = f"conf/at_home_led_{hostname}.conf"
+        if os.path.exists(file_name):
+            return file_name
 
-        return file_name
+        # Finally, look for the default conf file
+        file_name = "conf/at_home_led_default.conf"
+        if os.path.exists(file_name):
+            return file_name
+
+        # Does not exist, but is the last resort
+        return "at_home_led.conf"
