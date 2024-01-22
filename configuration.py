@@ -1,6 +1,6 @@
 #
 # AtHomeLED - LED string script executor
-# Copyright (C) 2016  Dave Hocker
+# Copyright © 2016, 2024  Dave Hocker
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -12,7 +12,7 @@
 #
 # Server configuration
 #
-# The at_home_dmx.conf file holds the configuration data in JSON format.
+# The at_home_led.conf file holds the configuration data in JSON format.
 # Currently, it looks like this:
 #
 # {
