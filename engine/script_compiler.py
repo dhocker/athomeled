@@ -16,6 +16,7 @@
 import datetime
 import logging
 import re
+from . import webcolor_definitions
 import webcolors
 
 logger = logging.getLogger("led")
@@ -83,8 +84,8 @@ class ScriptCompiler:
 
         # Add all of the web colors as defined colors
         # This makes them accessible by all commands
-        for wcname in webcolors.CSS3_NAMES_TO_HEX:
-            wc = webcolors.CSS3_NAMES_TO_HEX[wcname][1:]
+        for wcname in webcolor_definitions.CSS3_NAMES_TO_HEX:
+            wc = webcolor_definitions.CSS3_NAMES_TO_HEX[wcname][1:]
             self.color_stmt(["color", wcname, wc])
         logger.debug("%d web colors", len(self._vm.colors))
 
