@@ -108,43 +108,50 @@ def main():
     logger.info("Using configuration file: %s", configuration.Configuration.GetConfigurationFilePath())
     configuration.Configuration.dump_configuration()
 
-    # Wait for clock to sync. This is mostly for Raspberry Pis which do not have a hardware RTC.
-    if rpi_utils.is_raspberry_pi(raise_on_errors=False):
-        import psutil, datetime
-        boot_time = datetime.datetime.fromtimestamp(psutil.boot_time())
-        up_time = datetime.datetime.now() - boot_time
-        if up_time.seconds < configuration.Configuration.WaitForClockSync():
-            max_wait = configuration.Configuration.WaitForClockSync()
-            ntp_server = configuration.Configuration.NTPServer()
-            logger.debug("Waiting for clock to sync")
-            if rpi_utils.wait_for_clock_sync(ntpserver=ntp_server, max_wait=max_wait):
-                logger.info("Clock was synced")
+    try:
+        # Wait for clock to sync. This is mostly for Raspberry Pis which do not have a hardware RTC.
+        if rpi_utils.is_raspberry_pi(raise_on_errors=False):
+            import psutil, datetime
+            boot_time = datetime.datetime.fromtimestamp(psutil.boot_time())
+            up_time = datetime.datetime.now() - boot_time
+            if up_time.seconds < configuration.Configuration.WaitForClockSync():
+                max_wait = configuration.Configuration.WaitForClockSync()
+                ntp_server = configuration.Configuration.NTPServer()
+                logger.debug("Waiting for clock to sync")
+                if rpi_utils.wait_for_clock_sync(ntpserver=ntp_server, max_wait=max_wait):
+                    logger.info("Clock was synced")
+                else:
+                    logger.error("Clock sync failed")
             else:
-                logger.error("Clock sync failed")
+                logger.debug("Clock sync was not required")
         else:
-            logger.debug("Clock sync was not required")
-    else:
-        logger.info("Clock sync is not required for this system (not a Raspberry Pi)")
+            logger.info("Clock sync is not required for this system (not a Raspberry Pi)")
 
-    # Set up singleton instance of device driver
-    driver.manager.initialize_driver()
+        # Set up singleton instance of device driver
+        driver.manager.initialize_driver()
 
-    # Set up handler for the kill signal
-    signal.signal(signal.SIGTERM, term_handler)  # Activate the server; this will keep running until you
-    # interrupt the program with Ctrl-C or kill the daemon.
+        # Set up handler for the kill signal
+        signal.signal(signal.SIGTERM, term_handler)  # Activate the server; this will keep running until you
+        # interrupt the program with Ctrl-C or kill the daemon.
 
-    # This accepts connections from any network interface. It was the only
-    # way to get it to work in the RPi from remote machines.
-    HOST, PORT = "0.0.0.0", configuration.Configuration.Port()
+        # This accepts connections from any network interface. It was the only
+        # way to get it to work in the RPi from remote machines.
+        HOST, PORT = "0.0.0.0", configuration.Configuration.Port()
 
-    # Create the TCP socket server on its own thread.
-    # This is done so that we can handle the kill signal which
-    # arrives on the main thread. If we didn't put the TCP server
-    # on its own thread we would not be able to shut it down in
-    # an orderly fashion.
-    server = SocketServerThread.SocketServerThread(HOST, PORT,
-                                                   engine.led_command_handler.LEDCommandHandler,
-                                                   connection_time_out=configuration.Configuration.Timeout())
+        # Create the TCP socket server on its own thread.
+        # This is done so that we can handle the kill signal which
+        # arrives on the main thread. If we didn't put the TCP server
+        # on its own thread we would not be able to shut it down in
+        # an orderly fashion.
+        server = SocketServerThread.SocketServerThread(HOST, PORT,
+                                                       engine.led_command_handler.LEDCommandHandler,
+                                                       connection_time_out=configuration.Configuration.Timeout())
+    except Exception as e:
+        logger.error("Unhandled exception occurred during startup")
+        logger.error(e.strerror)
+        logger.error(sys.exc_info()[0])
+        app_trace.log_trace(logger, ex=e)
+        return False
 
     # Launch the socket server
     try:
